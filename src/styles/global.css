@@ -95,3 +95,12 @@ html {
     transition: none;
   }
 }
+
+/* ── Expressive Code: unified frame backgrounds ── */
+.expressive-code .frame {
+  --ec-frm-edBg: var(--bg-code);
+}
+.expressive-code .frame.is-terminal {
+  --ec-frm-trmBg: var(--bg-code);
+  --ec-frm-trmTtbBg: var(--bg-code);
+}
