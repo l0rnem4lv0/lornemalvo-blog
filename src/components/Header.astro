@@ -1,0 +1,60 @@
+---
+import ThemeToggle from '~/components/ThemeToggle.astro';
+---
+
+<header>
+  <nav>
+    <a href="/" class="logo">lornemalvo</a>
+    <div class="nav-links">
+      <a href="/">posts</a>
+      <a href="/tags">tags</a>
+    </div>
+    <ThemeToggle />
+  </nav>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 65ch;
+    margin: 0 auto;
+    height: 3.5rem;
+  }
+
+  .logo {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+
+  .logo:hover {
+    text-decoration: none;
+    opacity: 0.85;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.25rem;
+    flex: 1;
+  }
+
+  .nav-links a {
+    color: var(--fg-muted);
+    font-size: 0.875rem;
+    transition: color 150ms ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--fg);
+    text-decoration: none;
+  }
+</style>
