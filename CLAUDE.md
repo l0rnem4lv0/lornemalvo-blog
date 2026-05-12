@@ -93,6 +93,26 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
 - Mobile-first
 - Zero JS por defecto, solo client:* donde sea estrictamente necesario
 
+## Astro 6 conventions (Content Layer API)
+
+- Schema location: src/content.config.ts (NOT src/content/config.ts)
+- Use glob loader from 'astro/loaders'
+- Entry IDs: entry.id (NOT entry.slug)
+- Rendering: import { render } from 'astro:content'
+  Usage: const { Content, headings } = await render(entry)
+- Reference: https://docs.astro.build/en/guides/content-collections/
+
+## Pinned dependencies (do not auto-upgrade)
+
+- @tailwindcss/vite: 4.1.18 exact (4.3.x breaks with Astro 6.3.x rolldown resolver)
+- tailwindcss: 4.1.18 exact
+
+## NPM conventions
+
+- Critical dependencies installed with --save-exact (no ^ or ~)
+- Verify package.json after install
+- Always commit package-lock.json
+
 ## No hacer
 - No instalar React/Vue/Svelte salvo necesidad concreta
 - No usar CSS-in-JS
