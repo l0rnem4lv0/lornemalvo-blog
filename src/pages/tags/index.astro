@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const tagCounts = posts.reduce<Record<string, number>>((acc, post) => {
+  post.data.tags.forEach((tag) => {
+    acc[tag] = (acc[tag] ?? 0) + 1;
+  });
+  return acc;
+}, {});
+
+const tags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="Tags">
+  <h1 class="page-title">tags</h1>
+  <ul class="tag-list">
+    {tags.map(([tag, count]) => (
+      <li>
+        <a href={`/tags/${tag}`}>
+          #{tag}
+          <span class="count">{count}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tag-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--fg);
+    font-size: 0.9375rem;
+  }
+
+  .tag-list a:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .count {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+  }
+</style>
