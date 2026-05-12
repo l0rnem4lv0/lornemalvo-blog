@@ -1,0 +1,45 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<button
+  id="theme-toggle"
+  onclick="window.toggleTheme()"
+  aria-label="Toggle color theme"
+  title="Toggle color theme"
+>
+  <Icon name="lucide:sun" class="icon-sun" aria-hidden="true" />
+  <Icon name="lucide:moon" class="icon-moon" aria-hidden="true" />
+</button>
+
+<style>
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+
+  button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* show sun icon in dark mode, moon in light mode */
+  :global([data-theme="dark"]) .icon-sun  { display: block; }
+  :global([data-theme="dark"]) .icon-moon { display: none; }
+  :global([data-theme="light"]) .icon-sun  { display: none; }
+  :global([data-theme="light"]) .icon-moon { display: block; }
+</style>
