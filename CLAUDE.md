@@ -78,6 +78,22 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
   updated?: Date
 }
 
+## Vertical rhythm (prose / markdown rendering)
+
+CRITICAL: vertical spacing must be SYMMETRIC around block elements.
+
+Rule: spacing around "block" elements (code blocks, blockquotes, tables, headings)
+is defined ON those elements, not via adjacency selectors on paragraphs.
+
+Implementation:
+- Each block element wrapper gets `margin-top: X; margin-bottom: X` (same value).
+- X must be GREATER than any paragraph margin it could collapse with (e.g. 1.5rem > 1.25rem).
+- This guarantees CSS margin-collapsing always resolves to X on both sides.
+- Never use selectors like `p + figure { margin-top: ... }` to fix asymmetries —
+  they only patch the symptom, not the cause.
+
+Verified: .prose :global(.expressive-code) { margin: 1.5rem 0 }
+
 ## Comandos
 - npm run dev — servidor local
 - npm run build — build producción
