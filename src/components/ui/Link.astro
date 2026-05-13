@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  href: string;
+  external?: boolean;
+  class?: string;
+}
+
+const { href, external: explicitExternal, class: className } = Astro.props;
+const isExternal = explicitExternal ?? /^https?:\/\//.test(href);
+---
+
+<a
+  href={href}
+  class:list={['link', className]}
+  target={isExternal ? '_blank' : undefined}
+  rel={isExternal ? 'noopener noreferrer' : undefined}
+>
+  <slot />{isExternal && (
+    <Icon name="lucide:arrow-up-right" class="external-icon" aria-hidden="true" />
+  )}
+</a>
+
+<style>
+  .link {
+    /* Inherits color / underline from global `a` rule. */
+    display: inline;
+  }
+
+  .external-icon {
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    margin-inline-start: 0.15em;
+    vertical-align: -0.05em;
+  }
+</style>
