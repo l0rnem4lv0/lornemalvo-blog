@@ -16,6 +16,9 @@ Start with a full port scan to identify open services.
 nmap -sC -sV -oN editorial.nmap 10.10.11.20
 ```
 
+![Terminal output from the initial nmap scan against editorial.htb](./scan-screenshot.png)
+*Initial port scan against editorial.htb — only 22 and 80 reachable.*
+
 Output shows port 80 (HTTP) and 22 (SSH). The web app is a book publishing platform.
 
 ## Discovering SSRF
