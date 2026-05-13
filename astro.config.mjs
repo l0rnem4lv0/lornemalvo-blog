@@ -8,12 +8,10 @@ import icon from 'astro-icon';
 export default defineConfig({
   site: 'https://lornemalvo.com',
   integrations: [
-    expressiveCode({
-      themes: ['github-dark-default', 'github-light-default'],
-      useDarkModeMediaQuery: false,
-      themeCssSelector: (theme) =>
-        `[data-theme="${theme.name.includes('dark') ? 'dark' : 'light'}"]`,
-    }),
+    // Options live in ec.config.mjs so the <Code> component can read them
+    // (Astro requires Expressive Code options to be JSON-serializable when
+    // declared here, and our themeCssSelector is a function).
+    expressiveCode(),
     sitemap(),
     icon(),
   ],
