@@ -94,6 +94,25 @@
   --warning:    #b45309;
 }
 
+/* ── Tailwind theme mapping ──
+ * Inline so utilities (bg-bg, text-accent, font-mono, …) resolve to
+ * the live CSS variable instead of being baked at compile time. */
+@theme inline {
+  --color-bg:         var(--bg);
+  --color-bg-soft:    var(--bg-soft);
+  --color-bg-code:    var(--bg-code);
+  --color-fg:         var(--fg);
+  --color-fg-muted:   var(--fg-muted);
+  --color-accent:     var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-border:     var(--border);
+  --color-danger:     var(--danger);
+  --color-warning:    var(--warning);
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
 /* ── Resets ── */
 *,
 *::before,
