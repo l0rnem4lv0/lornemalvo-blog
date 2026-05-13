@@ -113,12 +113,40 @@ const { class: className } = Astro.props;
     margin: var(--space-6) 0;
   }
 
-  /* Figures (images with captions) */
+  /* Images — block, bordered, lazy-loaded by Astro's pipeline. */
+  .prose :global(img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: var(--space-6) auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  /*
+   * Caption convention: an image immediately followed by an italic
+   * paragraph becomes a centered caption. Drop the image's bottom
+   * margin via :has() so the caption sits close, then re-establish
+   * the rhythm below the caption.
+   */
+  .prose :global(img:has(+ em)) {
+    margin-bottom: var(--space-2);
+  }
+  .prose :global(img + em) {
+    display: block;
+    margin-bottom: var(--space-6);
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Figures (when authors hand-write <figure>/<figcaption>) */
   .prose :global(figure) {
     margin: var(--space-6) 0;
   }
   .prose :global(figure img) {
-    border-radius: var(--radius-md);
+    margin: 0;
   }
   .prose :global(figcaption) {
     margin-top: var(--space-2);
