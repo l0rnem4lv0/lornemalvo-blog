@@ -124,30 +124,14 @@ Accept: application/json`,
       <h2 id="typography-heading">Typography</h2>
 
       <Stack gap="md">
-        <div class="type-row">
-          <span class="type-token">--text-4xl · 700</span>
-          <h1 class="demo">The quick brown fox jumps over the lazy dog</h1>
-        </div>
-        <div class="type-row">
-          <span class="type-token">--text-3xl · 600</span>
-          <h2 class="demo">The quick brown fox jumps over the lazy dog</h2>
-        </div>
-        <div class="type-row">
-          <span class="type-token">--text-2xl · 600</span>
-          <h3 class="demo">The quick brown fox jumps over the lazy dog</h3>
-        </div>
-        <div class="type-row">
-          <span class="type-token">--text-xl · 600</span>
-          <h4 class="demo">The quick brown fox jumps over the lazy dog</h4>
-        </div>
-        <div class="type-row">
-          <span class="type-token">--text-lg · 500</span>
-          <h5 class="demo">The quick brown fox jumps over the lazy dog</h5>
-        </div>
-        <div class="type-row">
-          <span class="type-token">--text-base · 500</span>
-          <h6 class="demo">The quick brown fox jumps over the lazy dog</h6>
-        </div>
+        {(['h1','h2','h3','h4','h5','h6'] as const).map((level) => (
+          <div class="type-row">
+            <span class="type-token">{level}</span>
+            <span class:list={['demo', `demo-${level}`]} aria-label={`${level} sample`}>
+              The quick brown fox jumps over the lazy dog
+            </span>
+          </div>
+        ))}
       </Stack>
 
       <h3 class="subhead">Body</h3>
@@ -286,7 +270,11 @@ Accept: application/json`,
       </p>
 
       <Prose>
-        <h1>Heading one — h1</h1>
+        <p class="meta-note">
+          h1 is reserved for the page title — markdown content starts at h2.
+        </p>
+
+        <h2>Heading two — h2</h2>
         <p>
           This block is rendered inside <code>Prose</code>. The paragraph
           uses <code>--leading-relaxed</code> for comfortable reading at
@@ -294,7 +282,6 @@ Accept: application/json`,
           and <em>emphasis</em> all coexist with the surrounding text.
         </p>
 
-        <h2>Heading two — h2</h2>
         <p>
           A second paragraph follows. It should sit at exactly one
           <code>--space-5</code> below the first, but the heading
@@ -303,7 +290,7 @@ Accept: application/json`,
         </p>
 
         <h3>Heading three — h3</h3>
-        <p>And another paragraph, demonstrating tighter rhythm under h3.</p>
+        <p>Paragraph under h3, demonstrating slightly tighter rhythm.</p>
 
         <h4>Heading four — h4</h4>
         <p>Tighter still. h4 is the last heading that meaningfully changes pace.</p>
@@ -492,7 +479,20 @@ Accept: application/json`,
     color: var(--fg-muted);
   }
   .demo {
-    margin: 0;
+    display: block;
+    color: var(--fg);
+    letter-spacing: -0.02em;
+  }
+  .demo-h1 { font-size: var(--text-4xl); font-weight: var(--font-bold);     line-height: var(--leading-tight); }
+  .demo-h2 { font-size: var(--text-3xl); font-weight: var(--font-semibold); line-height: var(--leading-tight); }
+  .demo-h3 { font-size: var(--text-2xl); font-weight: var(--font-semibold); line-height: var(--leading-snug); }
+  .demo-h4 { font-size: var(--text-xl);  font-weight: var(--font-semibold); line-height: var(--leading-snug); }
+  .demo-h5 { font-size: var(--text-lg);  font-weight: var(--font-medium);   line-height: var(--leading-snug); }
+  .demo-h6 { font-size: var(--text-base); font-weight: var(--font-medium);  line-height: var(--leading-snug); }
+  .meta-note {
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+    color: var(--fg-muted);
   }
   .scale-list {
     display: grid;
