@@ -1,0 +1,129 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div class:list={['prose', className]}>
+  <slot />
+</div>
+
+<style>
+  .prose {
+    max-width: var(--measure);
+    line-height: var(--leading-relaxed);
+  }
+
+  /*
+   * Vertical rhythm — see CLAUDE.md.
+   * Every block element owns its own symmetric top/bottom margin.
+   * Adjacent block margins collapse to the larger value, which we
+   * keep strictly greater than the paragraph margin so the gap
+   * around blocks is always wider than the gap between paragraphs.
+   */
+
+  .prose :global(> :first-child) { margin-top: 0; }
+  .prose :global(> :last-child)  { margin-bottom: 0; }
+
+  /* Paragraph rhythm */
+  .prose :global(p) {
+    margin: 0 0 var(--space-5);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Headings */
+  .prose :global(h1) { margin: var(--space-10) 0 var(--space-4); }
+  .prose :global(h2) { margin: var(--space-10) 0 var(--space-4); }
+  .prose :global(h3) { margin: var(--space-8)  0 var(--space-3); }
+  .prose :global(h4) { margin: var(--space-6)  0 var(--space-2); }
+  .prose :global(h5),
+  .prose :global(h6) { margin: var(--space-5)  0 var(--space-2); }
+
+  /* Lists */
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: var(--space-6) 0;
+    padding-left: var(--space-6);
+  }
+  .prose :global(ul) { list-style: disc; }
+  .prose :global(ol) { list-style: decimal; }
+  .prose :global(li) {
+    margin: var(--space-2) 0;
+    line-height: var(--leading-relaxed);
+  }
+  .prose :global(li::marker) {
+    color: var(--fg-muted);
+  }
+  .prose :global(li > ul),
+  .prose :global(li > ol) {
+    margin: var(--space-2) 0;
+  }
+
+  /* Blockquote */
+  .prose :global(blockquote) {
+    margin: var(--space-6) 0;
+    padding: 0 0 0 var(--space-4);
+    border-left: 2px solid var(--accent);
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+  .prose :global(blockquote p) {
+    margin: 0;
+  }
+
+  /* Horizontal rule */
+  .prose :global(hr) {
+    margin: var(--space-8) 0;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Tables */
+  .prose :global(table) {
+    margin: var(--space-6) 0;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border);
+    text-align: left;
+    line-height: var(--leading-snug);
+  }
+  .prose :global(th) {
+    background: var(--bg-soft);
+    font-weight: var(--font-semibold);
+    color: var(--fg);
+  }
+  .prose :global(tr:nth-child(even) td) {
+    background: var(--bg-soft);
+  }
+
+  /* Strong / em inside prose */
+  .prose :global(strong) {
+    font-weight: var(--font-semibold);
+    color: var(--fg);
+  }
+
+  /* Code blocks (Expressive Code) — symmetric rhythm */
+  .prose :global(.expressive-code) {
+    margin: var(--space-6) 0;
+  }
+
+  /* Figures (images with captions) */
+  .prose :global(figure) {
+    margin: var(--space-6) 0;
+  }
+  .prose :global(figure img) {
+    border-radius: var(--radius-md);
+  }
+  .prose :global(figcaption) {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    text-align: center;
+  }
+</style>
