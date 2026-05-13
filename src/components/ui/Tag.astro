@@ -1,0 +1,38 @@
+---
+interface Props {
+  name: string;
+  href?: string;
+  class?: string;
+}
+
+const { name, href, class: className } = Astro.props;
+const target = href ?? `/tags/${name}`;
+---
+
+<a href={target} class:list={['tag', className]}>#{name}</a>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    line-height: 1;
+    color: var(--fg-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-2);
+    text-decoration: none;
+    transition:
+      color var(--transition-fast) ease,
+      border-color var(--transition-fast) ease;
+  }
+
+  .tag:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+</style>
