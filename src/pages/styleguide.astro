@@ -1,0 +1,601 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Stack from '~/components/ui/Stack.astro';
+import Container from '~/components/ui/Container.astro';
+import Button from '~/components/ui/Button.astro';
+import IconButton from '~/components/ui/IconButton.astro';
+import Tag from '~/components/ui/Tag.astro';
+import Link from '~/components/ui/Link.astro';
+import Divider from '~/components/ui/Divider.astro';
+import Prose from '~/components/ui/Prose.astro';
+
+type Swatch = { name: string; dark: string; light: string };
+
+const palette: Swatch[] = [
+  { name: '--bg',         dark: '#0a0a0a', light: '#fafafa' },
+  { name: '--bg-soft',    dark: '#111111', light: '#f0f0f0' },
+  { name: '--bg-code',    dark: '#0d1117', light: '#f6f8fa' },
+  { name: '--fg',         dark: '#e5e5e5', light: '#1a1a1a' },
+  { name: '--fg-muted',   dark: '#888888', light: '#6a6a6a' },
+  { name: '--accent',     dark: '#00ff9c', light: '#00875a' },
+  { name: '--accent-dim', dark: '#1a3d2e', light: '#c8e6d4' },
+  { name: '--border',     dark: '#1f1f1f', light: '#e5e5e5' },
+  { name: '--danger',     dark: '#ff5555', light: '#c41e3a' },
+  { name: '--warning',    dark: '#f1fa8c', light: '#b45309' },
+];
+
+const spacingScale: Array<[string, string, string]> = [
+  ['--space-1',  '0.25rem', '4px'],
+  ['--space-2',  '0.5rem',  '8px'],
+  ['--space-3',  '0.75rem', '12px'],
+  ['--space-4',  '1rem',    '16px'],
+  ['--space-5',  '1.25rem', '20px'],
+  ['--space-6',  '1.5rem',  '24px'],
+  ['--space-8',  '2rem',    '32px'],
+  ['--space-10', '2.5rem',  '40px'],
+  ['--space-12', '3rem',    '48px'],
+  ['--space-16', '4rem',    '64px'],
+  ['--space-20', '5rem',    '80px'],
+  ['--space-24', '6rem',    '96px'],
+];
+
+const typeScale: Array<[string, string, string]> = [
+  ['--text-xs',   '0.75rem',  '12px'],
+  ['--text-sm',   '0.875rem', '14px'],
+  ['--text-base', '1rem',     '16px'],
+  ['--text-lg',   '1.125rem', '18px'],
+  ['--text-xl',   '1.25rem',  '20px'],
+  ['--text-2xl',  '1.5rem',   '24px'],
+  ['--text-3xl',  '1.875rem', '30px'],
+  ['--text-4xl',  '2.25rem',  '36px'],
+  ['--text-5xl',  '3rem',     '48px'],
+];
+
+const codeExamples = {
+  bash: `# Reconnaissance — service version + OS detection
+nmap -sV -O -p- -T4 10.10.10.42 -oN scan.txt
+ssh user@target.local "cat /etc/shadow"`,
+  python: `from cryptography.hazmat.primitives import hashes
+
+def fingerprint(blob: bytes) -> str:
+    digest = hashes.Hash(hashes.SHA256())
+    digest.update(blob)
+    return digest.finalize().hex()`,
+  ts: `export async function probe(url: string): Promise<string> {
+  const res = await fetch(url, { method: 'HEAD' });
+  return res.headers.get('server') ?? 'unknown';
+}`,
+  http: `GET /api/users/1 HTTP/1.1
+Host: target.local
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+Accept: application/json`,
+};
+---
+
+<BaseLayout title="Styleguide" description="Design system reference for lornemalvo.com" wide>
+  <Stack gap="xl" as="section" class="styleguide">
+    <header class="intro">
+      <p class="eyebrow">Design system</p>
+      <h1>Styleguide</h1>
+      <p class="lede">
+        Visual source of truth for tokens, typography, and components. Not
+        linked from the public navigation — toggle the theme to see every
+        token in both palettes.
+      </p>
+    </header>
+
+    {/* ─── A. Palette ─────────────────────────────────────── */}
+    <section aria-labelledby="palette-heading">
+      <h2 id="palette-heading">Palette</h2>
+      <p class="section-lede">
+        Each row shows the same token in both palettes. The component itself
+        does not switch themes — these are static demos.
+      </p>
+
+      <div class="palette-grid">
+        <div class="palette-col" data-theme="dark">
+          <span class="palette-label">dark</span>
+          {palette.map((c) => (
+            <div class="swatch-row">
+              <span class="swatch" style={`background:${c.dark};border-color:var(--border)`}></span>
+              <code class="swatch-name">{c.name}</code>
+              <code class="swatch-hex">{c.dark}</code>
+            </div>
+          ))}
+        </div>
+
+        <div class="palette-col" data-theme="light">
+          <span class="palette-label">light</span>
+          {palette.map((c) => (
+            <div class="swatch-row">
+              <span class="swatch" style={`background:${c.light};border-color:var(--border)`}></span>
+              <code class="swatch-name">{c.name}</code>
+              <code class="swatch-hex">{c.light}</code>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ─── B. Typography ──────────────────────────────────── */}
+    <section aria-labelledby="typography-heading">
+      <h2 id="typography-heading">Typography</h2>
+
+      <Stack gap="md">
+        <div class="type-row">
+          <span class="type-token">--text-4xl · 700</span>
+          <h1 class="demo">The quick brown fox jumps over the lazy dog</h1>
+        </div>
+        <div class="type-row">
+          <span class="type-token">--text-3xl · 600</span>
+          <h2 class="demo">The quick brown fox jumps over the lazy dog</h2>
+        </div>
+        <div class="type-row">
+          <span class="type-token">--text-2xl · 600</span>
+          <h3 class="demo">The quick brown fox jumps over the lazy dog</h3>
+        </div>
+        <div class="type-row">
+          <span class="type-token">--text-xl · 600</span>
+          <h4 class="demo">The quick brown fox jumps over the lazy dog</h4>
+        </div>
+        <div class="type-row">
+          <span class="type-token">--text-lg · 500</span>
+          <h5 class="demo">The quick brown fox jumps over the lazy dog</h5>
+        </div>
+        <div class="type-row">
+          <span class="type-token">--text-base · 500</span>
+          <h6 class="demo">The quick brown fox jumps over the lazy dog</h6>
+        </div>
+      </Stack>
+
+      <h3 class="subhead">Body</h3>
+      <p>
+        Body text uses Inter Variable at <code>--text-base</code> with
+        <code>--leading-normal</code>. Inline <code>code</code> renders in
+        JetBrains Mono with a subtle background. Try selecting this
+        paragraph — the selection should paint on
+        <code>--accent</code> with <code>--bg</code> as foreground.
+      </p>
+
+      <p>
+        Internal links look like this: <a href="/">home</a>. External links
+        use the <code>Link</code> component:
+        <Link href="https://owasp.org/www-project-top-ten/">OWASP Top 10</Link>.
+        The arrow indicator is decorative and aria-hidden.
+      </p>
+
+      <h3 class="subhead">Type scale</h3>
+      <ul class="scale-list">
+        {typeScale.map(([token, rem, px]) => (
+          <li>
+            <code class="scale-token">{token}</code>
+            <span class="scale-sample" style={`font-size:${rem}`}>Aa</span>
+            <code class="scale-value">{rem} · {px}</code>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* ─── C. Spacing ─────────────────────────────────────── */}
+    <section aria-labelledby="spacing-heading">
+      <h2 id="spacing-heading">Spacing</h2>
+      <p class="section-lede">
+        Base unit is 4px. Each bar visualises one step on the scale.
+      </p>
+
+      <ul class="space-list">
+        {spacingScale.map(([token, rem, px]) => (
+          <li>
+            <code class="space-token">{token}</code>
+            <span class="space-bar" style={`width:${rem}`}></span>
+            <code class="space-value">{rem} · {px}</code>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* ─── D. Components ──────────────────────────────────── */}
+    <section aria-labelledby="components-heading">
+      <h2 id="components-heading">Components</h2>
+
+      <h3 class="subhead">Button</h3>
+      <div class="cluster">
+        <Button variant="primary" size="md">Primary md</Button>
+        <Button variant="ghost"   size="md">Ghost md</Button>
+        <Button variant="link"    size="md">Link md</Button>
+        <Button variant="primary" size="sm">Primary sm</Button>
+        <Button variant="ghost"   size="sm">Ghost sm</Button>
+        <Button variant="link"    size="sm">Link sm</Button>
+        <Button variant="ghost"   disabled>Disabled</Button>
+        <Button variant="ghost"   href="/">As link</Button>
+      </div>
+
+      <h3 class="subhead">IconButton</h3>
+      <div class="cluster">
+        <IconButton label="Sun"><Icon name="lucide:sun" /></IconButton>
+        <IconButton label="Moon"><Icon name="lucide:moon" /></IconButton>
+        <IconButton label="Search"><Icon name="lucide:search" /></IconButton>
+        <IconButton label="GitHub"><Icon name="lucide:github" /></IconButton>
+        <IconButton label="Twitter"><Icon name="lucide:twitter" /></IconButton>
+        <IconButton label="Primary search" variant="primary"><Icon name="lucide:search" /></IconButton>
+        <IconButton label="Small" size="sm"><Icon name="lucide:terminal" /></IconButton>
+      </div>
+
+      <h3 class="subhead">Tag</h3>
+      <div class="cluster">
+        <Tag name="writeup" />
+        <Tag name="web" />
+        <Tag name="reversing" />
+        <Tag name="crypto" />
+        <Tag name="forensics" />
+        <Tag name="htb" />
+      </div>
+
+      <h3 class="subhead">Link</h3>
+      <ul class="link-demo">
+        <li><Link href="/posts">Internal — posts index</Link></li>
+        <li><Link href="https://github.com">External — github.com</Link></li>
+        <li>Inline within a sentence: see <Link href="https://www.rfc-editor.org/rfc/rfc7519">RFC 7519</Link> for JWT spec.</li>
+      </ul>
+
+      <h3 class="subhead">Container</h3>
+      <p class="section-lede">
+        Visualised with a temporary outline. Narrow caps at 720px; wide caps
+        at 1080px.
+      </p>
+      <div class="container-demo">
+        <Container size="narrow">
+          <div class="container-fill">narrow · 720px</div>
+        </Container>
+      </div>
+      <div class="container-demo">
+        <Container size="wide">
+          <div class="container-fill">wide · 1080px</div>
+        </Container>
+      </div>
+
+      <h3 class="subhead">Stack</h3>
+      <div class="stack-demos">
+        {(['sm', 'md', 'lg', 'xl'] as const).map((gap) => (
+          <div class="stack-demo">
+            <code class="stack-label">gap="{gap}"</code>
+            <Stack gap={gap}>
+              <div class="stack-item">1</div>
+              <div class="stack-item">2</div>
+              <div class="stack-item">3</div>
+            </Stack>
+          </div>
+        ))}
+      </div>
+
+      <h3 class="subhead">Divider</h3>
+      <p>Default rule:</p>
+      <Divider />
+      <p>Subtle rule:</p>
+      <Divider variant="subtle" />
+    </section>
+
+    {/* ─── E. Markdown rendering ──────────────────────────── */}
+    <section aria-labelledby="prose-heading">
+      <h2 id="prose-heading">Markdown rendering</h2>
+      <p class="section-lede">
+        Everything inside the <code>Prose</code> wrapper. Vertical rhythm is
+        symmetric around block elements (see CLAUDE.md).
+      </p>
+
+      <Prose>
+        <h1>Heading one — h1</h1>
+        <p>
+          This block is rendered inside <code>Prose</code>. The paragraph
+          uses <code>--leading-relaxed</code> for comfortable reading at
+          long-form length. Inline <code>code</code>, <strong>bold</strong>,
+          and <em>emphasis</em> all coexist with the surrounding text.
+        </p>
+
+        <h2>Heading two — h2</h2>
+        <p>
+          A second paragraph follows. It should sit at exactly one
+          <code>--space-5</code> below the first, but the heading
+          above it commands a wider gap because every block element
+          owns symmetric top/bottom margins.
+        </p>
+
+        <h3>Heading three — h3</h3>
+        <p>And another paragraph, demonstrating tighter rhythm under h3.</p>
+
+        <h4>Heading four — h4</h4>
+        <p>Tighter still. h4 is the last heading that meaningfully changes pace.</p>
+
+        <h3>Lists</h3>
+        <p>Unordered:</p>
+        <ul>
+          <li>First item.</li>
+          <li>Second item with <a href="/">an inline link</a>.</li>
+          <li>
+            Nested list:
+            <ul>
+              <li>Nested item one.</li>
+              <li>Nested item two.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p>Ordered:</p>
+        <ol>
+          <li>Recon — gather banners and headers.</li>
+          <li>Enumerate — paths, params, ports.</li>
+          <li>Exploit — chain whatever sticks.</li>
+        </ol>
+
+        <h3>Blockquote</h3>
+        <blockquote>
+          <p>
+            “If you think technology can solve your security problems, then
+            you don't understand the problems and you don't understand the
+            technology.” — Bruce Schneier
+          </p>
+        </blockquote>
+
+        <h3>Tables</h3>
+        <table>
+          <thead>
+            <tr><th>Port</th><th>Service</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>22</td><td>ssh</td><td>OpenSSH 8.9p1</td></tr>
+            <tr><td>80</td><td>http</td><td>nginx 1.18.0</td></tr>
+            <tr><td>443</td><td>https</td><td>TLS 1.3, valid cert</td></tr>
+            <tr><td>3306</td><td>mysql</td><td>filtered</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Horizontal rule</h3>
+        <p>Above the rule.</p>
+        <hr />
+        <p>Below the rule. Both gaps should be identical.</p>
+
+        <h3>Code — four languages</h3>
+        <Code lang="bash"       code={codeExamples.bash}   frame="terminal" title="recon.sh" />
+        <Code lang="python"     code={codeExamples.python} title="hash.py" />
+        <Code lang="ts"         code={codeExamples.ts}     title="probe.ts" />
+        <Code lang="http"       code={codeExamples.http}   title="request.http" />
+      </Prose>
+    </section>
+
+    {/* ─── F. States ──────────────────────────────────────── */}
+    <section aria-labelledby="states-heading">
+      <h2 id="states-heading">States</h2>
+      <p class="section-lede">
+        <strong>Tab through</strong> the items below to verify focus rings.
+        Hover the buttons and tags to see hover states. The last button is
+        disabled.
+      </p>
+
+      <div class="cluster">
+        <Button variant="primary">Focus me · 1</Button>
+        <Button variant="ghost">Focus me · 2</Button>
+        <Button variant="link">Focus me · 3</Button>
+        <Tag name="focus-tag" href="#" />
+        <Link href="https://example.com">Focus external link</Link>
+        <IconButton label="Focus icon"><Icon name="lucide:keyboard" /></IconButton>
+        <Button variant="ghost" disabled>Disabled</Button>
+      </div>
+    </section>
+  </Stack>
+</BaseLayout>
+
+<style>
+  .styleguide {
+    padding-block: var(--space-8) var(--space-16);
+  }
+
+  .intro {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--space-6);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-2);
+  }
+  .lede {
+    color: var(--fg-muted);
+    max-width: var(--measure);
+    margin-top: var(--space-3);
+  }
+  .section-lede {
+    color: var(--fg-muted);
+    max-width: var(--measure);
+    margin-bottom: var(--space-6);
+  }
+  .subhead {
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-4);
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Palette */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  @media (min-width: 720px) {
+    .palette-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .palette-col {
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .palette-label {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-3);
+  }
+  .swatch-row {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-1) 0;
+  }
+  .swatch {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    display: block;
+  }
+  .swatch-name {
+    font-size: var(--text-sm);
+    color: var(--fg);
+    background: transparent;
+    padding: 0;
+  }
+  .swatch-hex {
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    background: transparent;
+    padding: 0;
+  }
+
+  /* Typography demos */
+  .type-row {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+  @media (max-width: 640px) {
+    .type-row { grid-template-columns: 1fr; gap: var(--space-1); }
+  }
+  .type-token {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+  }
+  .demo {
+    margin: 0;
+  }
+  .scale-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .scale-list li {
+    display: grid;
+    grid-template-columns: 8rem 3rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+  .scale-token,
+  .scale-value {
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    background: transparent;
+    padding: 0;
+  }
+  .scale-sample {
+    font-weight: var(--font-medium);
+    color: var(--fg);
+    line-height: 1;
+  }
+
+  /* Spacing */
+  .space-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .space-list li {
+    display: grid;
+    grid-template-columns: 8rem 6rem 1fr;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .space-token,
+  .space-value {
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    background: transparent;
+    padding: 0;
+  }
+  .space-bar {
+    display: block;
+    height: 0.5rem;
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Component clusters */
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  /* Link demo */
+  .link-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* Container demo */
+  .container-demo {
+    margin-bottom: var(--space-4);
+    border: 1px dashed var(--border);
+  }
+  .container-fill {
+    background: var(--bg-soft);
+    color: var(--fg-muted);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  /* Stack demo */
+  .stack-demos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-6);
+  }
+  .stack-demo {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+  .stack-label {
+    display: inline-block;
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    margin-bottom: var(--space-3);
+  }
+  .stack-item {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    text-align: center;
+  }
+</style>

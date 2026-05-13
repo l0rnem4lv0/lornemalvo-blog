@@ -7,12 +7,14 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  wide?: boolean;
 }
 
 const {
   title,
   description = 'Security research, CTF writeups, and technical notes by Lornemalvo.',
   ogImage,
+  wide = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -40,7 +42,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <Header />
-    <main>
+    <main class:list={[{ wide }]}>
       <slot />
     </main>
   </body>
@@ -51,5 +53,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     max-width: 65ch;
     margin: 0 auto;
     padding: 2rem 1.5rem 4rem;
+  }
+  main.wide {
+    max-width: var(--container-wide);
   }
 </style>
