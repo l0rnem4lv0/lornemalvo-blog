@@ -32,7 +32,7 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
 --bg-code:    #f6f8fa
 --fg:         #1a1a1a
 --fg-muted:   #6a6a6a
---accent:     #00875a
+--accent:     #00754d   /* darkened from #00875a for AA on #fafafa (5.51:1) */
 --accent-dim: #c8e6d4
 --border:     #e5e5e5
 --danger:     #c41e3a
