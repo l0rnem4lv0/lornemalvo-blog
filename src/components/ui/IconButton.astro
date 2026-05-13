@@ -1,0 +1,87 @@
+---
+type Variant = 'ghost' | 'primary';
+type Size = 'sm' | 'md';
+
+interface Props {
+  label: string;
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  id?: string;
+  class?: string;
+  onclick?: string;
+}
+
+const {
+  label,
+  variant = 'ghost',
+  size = 'md',
+  href,
+  type = 'button',
+  id,
+  class: className,
+  onclick,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const baseProps = href ? { href } : { type };
+---
+
+<Tag
+  class:list={['icon-btn', `icon-btn-${variant}`, `icon-btn-${size}`, className]}
+  aria-label={label}
+  title={label}
+  id={id}
+  onclick={onclick}
+  {...baseProps}
+>
+  <slot />
+</Tag>
+
+<style>
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--fg-muted);
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      color var(--transition-fast) ease,
+      border-color var(--transition-fast) ease,
+      background-color var(--transition-fast) ease;
+  }
+
+  .icon-btn-sm {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .icon-btn-md {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .icon-btn-ghost:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .icon-btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .icon-btn-primary:hover {
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .icon-btn :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+</style>
