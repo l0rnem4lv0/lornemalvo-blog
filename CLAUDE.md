@@ -118,6 +118,46 @@ Verified: .prose :global(.expressive-code) { margin: 1.5rem 0 }
   Usage: const { Content, headings } = await render(entry)
 - Reference: https://docs.astro.build/en/guides/content-collections/
 
+### Post folder structure (folder-per-slug)
+
+Each post is a folder containing index.md and its assets:
+
+```
+src/content/posts/
+  htb-writeup-editorial/
+    index.md
+    scan-screenshot.png
+    burp-request.png
+```
+
+- Glob loader pattern: `**/index.md` with `generateId` stripping `/index`
+  so `entry.id` stays a clean slug (`htb-writeup-editorial`).
+- This is what lets body markdown reference images via plain relative
+  paths (`./scan-screenshot.png`).
+
+## Image handling in posts
+
+- Location: `src/content/posts/[slug]/*.{png,jpg,webp}` — co-located with `index.md`.
+- Markdown syntax: `![alt text](./filename.png)` — Astro resolves the path
+  relative to the markdown file.
+- Astro 6 optimises automatically: WebP conversion, intrinsic `width`/`height`
+  (CLS prevention), `loading="lazy"`, `decoding="async"`. No `<img>` boilerplate
+  needed.
+- Captions: italic paragraph on the line directly after the image:
+  ```markdown
+  ![alt](./screenshot.png)
+  *Caption descriptivo aquí.*
+  ```
+  Styled via the `img + em` selector in `Prose.astro`: block, centered,
+  `--fg-muted`, `--text-sm`. No `<figure>` component needed.
+- All images get `border: 1px solid var(--border)` and
+  `border-radius: var(--radius-md)` by default in `.prose`.
+- Always include descriptive `alt` text — empty `alt=""` is allowed only for
+  purely decorative images.
+- For dark-only screenshots (terminal, Burp, IDE dark theme), the subtle
+  border prevents jarring transitions into light mode without needing
+  theme-specific variants.
+
 ## Pinned dependencies (do not auto-upgrade)
 
 - @tailwindcss/vite: 4.1.18 exact (4.3.x breaks with Astro 6.3.x rolldown resolver)
