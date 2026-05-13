@@ -1,0 +1,26 @@
+---
+type Gap = 'sm' | 'md' | 'lg' | 'xl';
+
+interface Props {
+  gap?: Gap;
+  as?: 'div' | 'section' | 'article' | 'ul' | 'ol';
+  class?: string;
+}
+
+const { gap = 'md', as: Tag = 'div', class: className } = Astro.props;
+---
+
+<Tag class:list={['stack', `stack-${gap}`, className]}>
+  <slot />
+</Tag>
+
+<style>
+  .stack {
+    display: flex;
+    flex-direction: column;
+  }
+  .stack-sm { gap: var(--space-2); }
+  .stack-md { gap: var(--space-4); }
+  .stack-lg { gap: var(--space-8); }
+  .stack-xl { gap: var(--space-16); }
+</style>
