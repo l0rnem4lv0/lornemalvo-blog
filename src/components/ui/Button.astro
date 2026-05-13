@@ -1,0 +1,118 @@
+---
+type Variant = 'primary' | 'ghost' | 'link';
+type Size = 'sm' | 'md';
+
+interface Props {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  external?: boolean;
+  class?: string;
+}
+
+const {
+  variant = 'ghost',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  external: explicitExternal,
+  class: className,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const isExternal = href ? (explicitExternal ?? /^https?:\/\//.test(href)) : false;
+
+const linkProps = href
+  ? {
+      href,
+      target: isExternal ? '_blank' : undefined,
+      rel: isExternal ? 'noopener noreferrer' : undefined,
+      ...(disabled ? { 'aria-disabled': 'true', tabindex: '-1' } : {}),
+    }
+  : { type, disabled };
+---
+
+<Tag class:list={['btn', `btn-${variant}`, `btn-${size}`, className]} {...linkProps}>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-weight: var(--font-medium);
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-fast) ease,
+      border-color var(--transition-fast) ease,
+      color var(--transition-fast) ease;
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Sizes */
+  .btn-sm {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    min-height: 1.75rem;
+  }
+  .btn-md {
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-4);
+    min-height: 2.25rem;
+  }
+
+  /* Variant: primary */
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--accent);
+  }
+
+  /* Variant: ghost */
+  .btn-ghost {
+    background: transparent;
+    color: var(--fg);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Variant: link */
+  .btn-link {
+    background: transparent;
+    color: var(--accent);
+    border-color: transparent;
+    padding-inline: 0;
+    min-height: 0;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--accent-dim);
+    text-underline-offset: 3px;
+  }
+  .btn-link:hover {
+    text-decoration-color: var(--accent);
+  }
+</style>
