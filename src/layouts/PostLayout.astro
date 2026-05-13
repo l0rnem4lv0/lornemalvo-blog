@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Prose from '~/components/ui/Prose.astro';
 
 interface Props {
   title: string;
@@ -53,9 +54,9 @@ const difficultyColors: Record<string, string> = {
       )}
     </header>
 
-    <div class="prose">
+    <Prose>
       <slot />
-    </div>
+    </Prose>
   </article>
 </BaseLayout>
 
@@ -124,101 +125,5 @@ const difficultyColors: Record<string, string> = {
   .updated {
     font-size: 0.75rem;
     color: var(--fg-muted);
-  }
-
-  /* ── Prose styles ── */
-  .prose :global(h2),
-  .prose :global(h3),
-  .prose :global(h4) {
-    color: var(--fg);
-    font-weight: 600;
-    line-height: 1.3;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .prose :global(h2) { font-size: 1.5rem; }
-  .prose :global(h3) { font-size: 1.25rem; }
-  .prose :global(h4) { font-size: 1.125rem; }
-
-  .prose :global(p) {
-    margin-bottom: 1.25rem;
-    line-height: 1.7;
-  }
-
-  .prose :global(ul),
-  .prose :global(ol) {
-    margin-bottom: 1.25rem;
-    padding-left: 1.5rem;
-  }
-
-  .prose :global(li) {
-    margin-bottom: 0.375rem;
-    line-height: 1.7;
-  }
-
-  .prose :global(code:not(pre code)) {
-    background: var(--bg-soft);
-    color: var(--accent);
-    padding: 0.1em 0.35em;
-    border-radius: 3px;
-    font-size: 0.875em;
-  }
-
-  .prose :global(blockquote) {
-    border-left: 2px solid var(--accent);
-    padding-left: 1rem;
-    color: var(--fg-muted);
-    font-style: italic;
-    margin: 1.5rem 0;
-  }
-
-  .prose :global(hr) {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 2rem 0;
-  }
-
-  .prose :global(a) {
-    color: var(--accent);
-    text-decoration: underline;
-    text-decoration-color: var(--accent-dim);
-    text-underline-offset: 2px;
-  }
-
-  .prose :global(strong) {
-    font-weight: 600;
-    color: var(--fg);
-  }
-
-  .prose :global(table) {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
-    margin-top: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .prose :global(th),
-  .prose :global(td) {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    text-align: left;
-    line-height: 1.5;
-  }
-
-  .prose :global(th) {
-    background: var(--bg-soft);
-    font-weight: 600;
-    color: var(--fg);
-  }
-
-  .prose :global(tr:nth-child(even) td) {
-    background: var(--bg-soft);
-  }
-
-  .prose :global(.expressive-code) {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
   }
 </style>
