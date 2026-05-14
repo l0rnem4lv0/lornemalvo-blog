@@ -169,6 +169,21 @@ src/content/posts/
 - Verify package.json after install
 - Always commit package-lock.json
 
+## PostCard conventions
+
+- Stretched link via `h2 a::after { position: absolute; inset: 0; z-index: 0 }`
+- `article` needs `position: relative` for stretched link to work
+- Tags need `position: relative; z-index: 1` to be clickable over stretched link
+- Reading time and date formatting live in `src/lib/posts.ts` (`getReadingTime`, `formatDate`)
+- Difficulty colors: easy (accent sutil), medium (warning), hard (color-mix danger+fg-muted), insane (danger puro)
+- Post titles in cards: `--fg` at rest, `--accent` on hover. Never `--accent` at rest.
+
+## Site config
+
+- All configurable constants in `src/config.ts` (SITE_CONFIG)
+- `RECENT_POSTS_COUNT` controls posts shown on home — editorial config, not env var
+- Social URLs in SITE_CONFIG — update before deploy
+
 ## No hacer
 - No instalar React/Vue/Svelte salvo necesidad concreta
 - No usar CSS-in-JS
