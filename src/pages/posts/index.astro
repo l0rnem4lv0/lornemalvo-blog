@@ -17,16 +17,8 @@ const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueO
     <p class="empty">No posts yet.</p>
   ) : (
     <div>
-      {posts.map((post) => (
-        <PostCard
-          title={post.data.title}
-          description={post.data.description}
-          date={post.data.date}
-          slug={post.id}
-          category={post.data.category}
-          difficulty={post.data.difficulty}
-          tags={post.data.tags}
-        />
+      {posts.map((post, index) => (
+        <PostCard post={post} showDivider={index > 0} />
       ))}
     </div>
   )}
