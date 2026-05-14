@@ -1,58 +1,66 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Prose from '~/components/ui/Prose.astro';
+import Divider from '~/components/ui/Divider.astro';
+import Tag from '~/components/ui/Tag.astro';
 
 interface Props {
-  title: string;
-  description: string;
-  date: Date;
-  updated?: Date;
-  tags: string[];
-  category: 'writeup' | 'article' | 'note';
-  difficulty?: 'easy' | 'medium' | 'hard' | 'insane';
+  post: CollectionEntry<'posts'>;
 }
 
-const { title, description, date, updated, tags, category, difficulty } = Astro.props;
+const { post } = Astro.props;
+const { title, description, date, updated, tags, difficulty } = post.data;
 
-const dateStr = date.toLocaleDateString('en-CA');
-const updatedStr = updated?.toLocaleDateString('en-CA');
+const wordCount = (post.body ?? '').trim().split(/\s+/).filter(Boolean).length;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-const difficultyColors: Record<string, string> = {
-  easy:   '#57ab5a',
-  medium: '#e3b341',
-  hard:   '#f47067',
-  insane: '#a475f9',
-};
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+const dateStr = dateFormatter.format(date);
+const updatedStr = updated ? dateFormatter.format(updated) : null;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  publishDate={date}
+  tags={tags}
+>
   <article>
     <header class="post-header">
       <div class="meta">
         <time datetime={date.toISOString()}>{dateStr}</time>
-        <span class="category">{category}</span>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime} min read</span>
+        {difficulty && <span aria-hidden="true">·</span>}
         {difficulty && (
-          <span class="difficulty" style={`color: ${difficultyColors[difficulty]}`}>
+          <span class:list={['difficulty', `difficulty-${difficulty}`]}>
             {difficulty}
           </span>
         )}
       </div>
 
       <h1>{title}</h1>
-      <p class="description">{description}</p>
+
+      {description && <p class="description">{description}</p>}
 
       {tags.length > 0 && (
         <ul class="tags">
           {tags.map((tag) => (
-            <li><a href={`/tags/${tag}`}>#{tag}</a></li>
+            <li><Tag name={tag} /></li>
           ))}
         </ul>
       )}
 
-      {updatedStr && (
-        <p class="updated">Updated: {updatedStr}</p>
-      )}
+      {updatedStr && <p class="updated">Updated: {updatedStr}</p>}
     </header>
+
+    <Divider />
 
     <Prose>
       <slot />
@@ -61,69 +69,58 @@ const difficultyColors: Record<string, string> = {
 </BaseLayout>
 
 <style>
+  article {
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+
   .post-header {
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-2);
   }
 
   .meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 0.75rem;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
     color: var(--fg-muted);
-    margin-bottom: 0.75rem;
-  }
-
-  .category {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.625rem;
-    border: 1px solid var(--border);
-    padding: 0 0.375rem;
-    border-radius: 2px;
+    margin-bottom: var(--space-3);
   }
 
   .difficulty {
-    font-weight: 500;
+    font-weight: var(--font-medium);
+    text-transform: lowercase;
   }
+  .difficulty-easy   { color: #57ab5a; }
+  .difficulty-medium { color: #e3b341; }
+  .difficulty-hard   { color: #f47067; }
+  .difficulty-insane { color: #a475f9; }
 
   h1 {
-    font-size: 1.875rem;
-    font-weight: 700;
-    line-height: 1.25;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.02em;
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-3);
   }
 
   .description {
+    font-size: var(--text-lg);
     color: var(--fg-muted);
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-4);
   }
 
   .tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
     list-style: none;
-    margin-bottom: 0.75rem;
-  }
-
-  .tags a {
-    font-size: 0.75rem;
-    color: var(--fg-muted);
-  }
-
-  .tags a:hover {
-    color: var(--accent);
-    text-decoration: none;
   }
 
   .updated {
-    font-size: 0.75rem;
+    font-size: var(--text-xs);
     color: var(--fg-muted);
+    margin-top: var(--space-3);
   }
 </style>
