@@ -1,23 +1,223 @@
 ---
+// AVATAR: Place your avatar at src/content/about/avatar.{png,jpg,webp}
+//         Recommended size: 240×240px (displayed at 120×120 for 2× retina).
+//         Then replace the <svg> placeholder below with:
+//           import { Image } from 'astro:assets';
+//           import avatarImage from '../content/about/avatar.png';
+//           <Image src={avatarImage} alt="Lornemalvo" width={120} height={120} class="avatar" />
+//
+// UPDATE BEFORE DEPLOY:
+//   - GITHUB_URL and TWITTER_URL in src/config.ts
+//   - Email address in the Contact section below.
+//   - HackTheBox profile URL in the Platforms section below.
+
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Divider from '~/components/ui/Divider.astro';
+import Link from '~/components/ui/Link.astro';
+import { SITE_CONFIG } from '~/config';
 ---
 
-<BaseLayout title="About" description="About Lornemalvo.">
-  <h1 class="page-title">about</h1>
-  <p class="placeholder">TBD.</p>
+<BaseLayout
+  title="About"
+  description="Security researcher in training. Pentesting, web security, and CTFs."
+>
+  <!-- Hero -->
+  <section class="hero" aria-label="About hero">
+    <div class="avatar-wrap">
+      <!-- Replace with <Image> once avatar is added to src/content/about/ -->
+      <svg
+        class="avatar-placeholder"
+        viewBox="0 0 120 120"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        role="img"
+      >
+        <rect width="120" height="120" rx="4" fill="var(--bg-soft)" />
+        <rect width="120" height="120" rx="4" fill="none" stroke="var(--border)" stroke-width="1" />
+        <text
+          x="60"
+          y="72"
+          text-anchor="middle"
+          font-family="var(--font-mono)"
+          font-size="34"
+          font-weight="700"
+          fill="var(--accent)"
+          shape-rendering="crispEdges"
+        >LM</text>
+      </svg>
+    </div>
+
+    <div class="hero-text">
+      <h1>Lornemalvo</h1>
+      <p class="tagline">Pentester in training. Web security, CTFs, and notes from the field.</p>
+    </div>
+  </section>
+
+  <Divider variant="subtle" />
+
+  <!-- Bio -->
+  <section aria-labelledby="bio-heading">
+    <h2 id="bio-heading" class="section-label">About</h2>
+    <p>Security enthusiast focused on web application security and penetration testing. Currently working toward OSCP while grinding CTF platforms and building a solid offensive security foundation.</p>
+    <p>This blog is a public notebook — writeups, tools, and notes on things I&apos;m learning. If it helps someone else, even better.</p>
+  </section>
+
+  <Divider variant="subtle" />
+
+  <!-- Certifications -->
+  <section aria-labelledby="certs-heading">
+    <h2 id="certs-heading" class="section-label">Certifications</h2>
+    <ul class="certs-list">
+      <li class="cert-item">
+        <span class="cert-badge">eJPT</span>
+        <span class="cert-meta">eLearnSecurity · 2024</span>
+      </li>
+      <li class="cert-item">
+        <span class="cert-badge cert-badge--progress">OSCP</span>
+        <span class="cert-meta">Offensive Security · in progress</span>
+      </li>
+    </ul>
+  </section>
+
+  <Divider variant="subtle" />
+
+  <!-- Platforms -->
+  <section aria-labelledby="platforms-heading">
+    <h2 id="platforms-heading" class="section-label">Platforms</h2>
+    <ul class="link-list">
+      <!-- UPDATE: replace with your real HackTheBox profile URL -->
+      <li><Link href="https://app.hackthebox.com/users/lornemalvo" external>HackTheBox</Link></li>
+      <li><Link href={SITE_CONFIG.GITHUB_URL} external>GitHub</Link></li>
+    </ul>
+  </section>
+
+  <Divider variant="subtle" />
+
+  <!-- Contact -->
+  <section aria-labelledby="contact-heading">
+    <h2 id="contact-heading" class="section-label">Contact</h2>
+    <ul class="link-list">
+      <li><Link href={SITE_CONFIG.TWITTER_URL} external>Twitter / X</Link></li>
+      <!-- UPDATE: replace with real email address -->
+      <li><Link href="mailto:hello@lornemalvo.com" external>hello@lornemalvo.com</Link></li>
+    </ul>
+  </section>
 </BaseLayout>
 
 <style>
-  .page-title {
+  /* ── Hero ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-6);
+    padding-block: var(--space-10) var(--space-2);
+  }
+
+  @media (min-width: 640px) {
+    .hero {
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+      gap: var(--space-8);
+      padding-block: var(--space-8) var(--space-2);
+    }
+  }
+
+  .avatar-wrap {
+    flex-shrink: 0;
+  }
+
+  .avatar-placeholder {
+    display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-md);
+    image-rendering: pixelated;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--accent);
+    line-height: var(--leading-tight);
+  }
+
+  .tagline {
+    color: var(--fg-muted);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+  }
+
+  /* ── Section headings ── */
+  .section-label {
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
     color: var(--fg-muted);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     margin-bottom: var(--space-4);
   }
 
-  .placeholder {
+  /* ── Bio ── */
+  section p {
+    line-height: var(--leading-relaxed);
+    color: var(--fg);
+  }
+
+  section p + p {
+    margin-top: var(--space-4);
+  }
+
+  /* ── Certifications ── */
+  .certs-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    list-style: none;
+  }
+
+  .cert-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .cert-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    line-height: 1;
     color: var(--fg-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .cert-badge--progress {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .cert-meta {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+
+  /* ── Platforms / Contact ── */
+  .link-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    list-style: none;
   }
 </style>
