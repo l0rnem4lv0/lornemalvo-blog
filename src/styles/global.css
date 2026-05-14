@@ -256,6 +256,52 @@ a:hover {
   }
 }
 
+/* ── CRT text effect ── */
+.crt-text {
+  position: relative;
+  animation: crt-flicker 4s ease-in-out infinite;
+}
+
+/* Scanlines: 1px dark lines every 3px, barely visible, non-interactive */
+.crt-text::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 3px
+  );
+  pointer-events: none;
+}
+
+/* Phosphor glow — dark theme (default) */
+:root .crt-text,
+[data-theme="dark"] .crt-text {
+  text-shadow:
+    0 0 4px  #00ff9c,
+    0 0 12px #00ff9c99,
+    0 0 30px #00ff9c44,
+    0 0 60px #00ff9c22;
+}
+
+/* Phosphor glow — light theme (green-dark, more subtle) */
+[data-theme="light"] .crt-text {
+  text-shadow:
+    0 0 4px  #00754d,
+    0 0 12px #00754d99,
+    0 0 30px #00754d44,
+    0 0 60px #00754d22;
+}
+
+@keyframes crt-flicker {
+  0%,  29%, 32%, 77%, 80%, 100% { opacity: 1; }
+  30%, 78%                       { opacity: 0.97; }
+  31%, 79%                       { opacity: 0.98; }
+}
+
 /* ── Expressive Code: unified frame backgrounds ── */
 .expressive-code .frame {
   --ec-frm-edBg: var(--bg-code);
