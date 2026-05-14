@@ -59,15 +59,15 @@ const isActive = (href: string) =>
     font-family: var(--font-mono);
     font-weight: var(--font-semibold);
     font-size: var(--text-base);
-    color: var(--fg);
+    color: var(--accent);
     text-decoration: none;
     letter-spacing: -0.02em;
     flex-shrink: 0;
-    transition: color var(--transition-fast) ease;
+    transition: opacity var(--transition-fast) ease;
   }
 
   .logo:hover {
-    color: var(--accent);
+    opacity: 0.8;
   }
 
   nav {
