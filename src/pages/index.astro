@@ -21,7 +21,7 @@ const recentPosts = allPosts
     <p class="tagline">{SITE_CONFIG.SITE_DESCRIPTION}</p>
   </section>
 
-  <Divider variant="subtle" />
+  <Divider variant="subtle" class="hero-divider" />
 
   <!-- Recent posts -->
   <section aria-labelledby="recent-posts-heading">
@@ -42,7 +42,7 @@ const recentPosts = allPosts
 <style>
   /* ── Hero ── */
   .hero {
-    padding: var(--space-16) 0 var(--space-12);
+    padding: var(--space-16) 0 var(--space-6);
   }
 
   h1 {
@@ -83,6 +83,10 @@ const recentPosts = allPosts
     .cursor { animation: none; opacity: 1; }
   }
 
+  :global(.hero-divider) {
+    margin: var(--space-4) 0;
+  }
+
   /* ── Recent posts ── */
   .section-label {
     font-size: var(--text-sm);
@@ -90,7 +94,7 @@ const recentPosts = allPosts
     color: var(--fg-muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0;
+    margin-bottom: var(--space-6);
   }
 
   .posts-list {
@@ -102,6 +106,7 @@ const recentPosts = allPosts
   }
 
   .all-posts-link a {
+    margin-top: var(--space-2);
     font-size: var(--text-sm);
     color: var(--fg-muted);
     text-decoration: none;
