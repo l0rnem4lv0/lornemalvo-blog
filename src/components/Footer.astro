@@ -1,11 +1,12 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { SITE_CONFIG } from '~/config';
 
 const year = new Date().getFullYear();
 
 const socials = [
-  { label: 'GitHub', href: 'https://github.com/lornemalvo', icon: 'lucide:github' },
-  { label: 'Twitter', href: 'https://twitter.com/lornemalvo', icon: 'lucide:twitter' },
+  { label: 'GitHub', href: SITE_CONFIG.GITHUB_URL, icon: 'lucide:github' },
+  { label: 'Twitter', href: SITE_CONFIG.TWITTER_URL, icon: 'lucide:twitter' },
   { label: 'RSS feed', href: '/rss.xml', icon: 'lucide:rss' },
 ];
 ---

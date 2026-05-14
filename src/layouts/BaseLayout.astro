@@ -4,6 +4,7 @@ import ThemeScript from '~/components/ThemeScript.astro';
 import Header from '~/components/Header.astro';
 import Footer from '~/components/Footer.astro';
 import Container from '~/components/ui/Container.astro';
+import { SITE_CONFIG } from '~/config';
 
 interface Props {
   title: string;
@@ -16,9 +17,7 @@ interface Props {
   wide?: boolean;
 }
 
-const SITE_NAME = 'Lornemalvo';
-const SITE_DESCRIPTION =
-  'Security research, CTF writeups, and technical notes by Lornemalvo.';
+const { SITE_NAME, SITE_DESCRIPTION } = SITE_CONFIG;
 const DEFAULT_OG_IMAGE = '/og-default.png';
 
 const {
