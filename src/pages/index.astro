@@ -1,17 +1,48 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/PostCard.astro';
+import Divider from '~/components/ui/Divider.astro';
+import { SITE_CONFIG } from '~/config';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const recentPosts = allPosts
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, SITE_CONFIG.RECENT_POSTS_COUNT);
 ---
 
-<BaseLayout title="Home">
-  <section class="hero">
+<BaseLayout
+  title={SITE_CONFIG.SITE_NAME}
+  description={SITE_CONFIG.SITE_DESCRIPTION}
+>
+  <!-- Hero -->
+  <section class="hero" aria-label="Hero">
     <h1 class="crt-text">lornemalvo<span class="prompt" aria-hidden="true">&gt;</span><span class="cursor" aria-hidden="true">|</span></h1>
-    <p class="tagline">Security research, writeups, and notes.</p>
+    <p class="tagline">{SITE_CONFIG.SITE_DESCRIPTION}</p>
+  </section>
+
+  <Divider variant="subtle" />
+
+  <!-- Recent posts -->
+  <section aria-labelledby="recent-posts-heading">
+    <h2 id="recent-posts-heading" class="section-label">Recent posts</h2>
+
+    <div class="posts-list">
+      {recentPosts.map((post, index) => (
+        <PostCard post={post} showDivider={index > 0} />
+      ))}
+    </div>
+
+    <div class="all-posts-link">
+      <a href="/posts">All posts →</a>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  /* ── Hero ── */
   .hero {
-    padding-block: var(--space-16);
+    padding: var(--space-16) 0 var(--space-12);
   }
 
   h1 {
@@ -29,6 +60,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
     line-height: var(--leading-snug);
   }
 
+  /* CRT console effect */
   .prompt {
     font-weight: var(--font-normal);
     margin-inline: 0.22em;
@@ -49,5 +81,34 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 
   @media (prefers-reduced-motion: reduce) {
     .cursor { animation: none; opacity: 1; }
+  }
+
+  /* ── Recent posts ── */
+  .section-label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0;
+  }
+
+  .posts-list {
+    margin-top: var(--space-6);
+  }
+
+  .all-posts-link {
+    margin-top: var(--space-8);
+  }
+
+  .all-posts-link a {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast) ease;
+  }
+
+  .all-posts-link a:hover {
+    color: var(--accent);
   }
 </style>
