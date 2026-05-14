@@ -1,48 +1,31 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PostCard from '~/components/PostCard.astro';
-
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
-const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
-<BaseLayout title="Home" description="Security research, CTF writeups, and technical notes.">
-  <section>
-    <h1 class="page-title">posts</h1>
-    {posts.length === 0 ? (
-      <p class="empty">No posts yet.</p>
-    ) : (
-      <div>
-        {posts.map((post) => (
-          <PostCard
-            title={post.data.title}
-            description={post.data.description}
-            date={post.data.date}
-            slug={post.id}
-            category={post.data.category}
-            difficulty={post.data.difficulty}
-            tags={post.data.tags}
-          />
-        ))}
-      </div>
-    )}
+<BaseLayout title="Home">
+  <section class="hero">
+    <h1>lornemalvo</h1>
+    <p class="tagline">Security research, writeups, and notes.</p>
   </section>
 </BaseLayout>
 
 <style>
-  .page-title {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--fg-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.5rem;
+  .hero {
+    padding-block: var(--space-16);
   }
 
-  .empty {
+  h1 {
+    font-family: var(--font-mono);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    color: var(--fg);
+    letter-spacing: -0.04em;
+    margin-bottom: var(--space-3);
+  }
+
+  .tagline {
     color: var(--fg-muted);
-    font-size: 0.875rem;
-    margin-top: 2rem;
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
   }
 </style>
