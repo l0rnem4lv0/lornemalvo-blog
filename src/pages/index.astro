@@ -4,7 +4,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 
 <BaseLayout title="Home">
   <section class="hero">
-    <h1 class="crt-text">lornemalvo</h1>
+    <h1 class="crt-text">lornemalvo<span class="prompt" aria-hidden="true">&gt;</span><span class="cursor" aria-hidden="true">|</span></h1>
     <p class="tagline">Security research, writeups, and notes.</p>
   </section>
 </BaseLayout>
@@ -27,5 +27,26 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
     color: var(--fg-muted);
     font-size: var(--text-lg);
     line-height: var(--leading-snug);
+  }
+
+  .prompt {
+    font-weight: var(--font-normal);
+    margin-inline: 0.22em;
+    letter-spacing: 0;
+  }
+
+  .cursor {
+    font-weight: 900;
+    letter-spacing: 0;
+    animation: cursor-blink 1.1s infinite;
+  }
+
+  @keyframes cursor-blink {
+    0%,  49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; opacity: 1; }
   }
 </style>
