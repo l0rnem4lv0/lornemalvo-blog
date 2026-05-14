@@ -1,60 +1,103 @@
 ---
 import ThemeToggle from '~/components/ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+
+const navLinks = [
+  { label: 'posts', href: '/posts' },
+  { label: 'about', href: '/about' },
+];
+
+const isActive = (href: string) =>
+  path === href || path.startsWith(`${href}/`);
 ---
 
 <header>
-  <nav>
+  <div class="inner">
     <a href="/" class="logo">lornemalvo</a>
-    <div class="nav-links">
-      <a href="/">posts</a>
-      <a href="/tags">tags</a>
-    </div>
+    <nav aria-label="Main navigation">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class:list={['nav-link', { active: isActive(link.href) }]}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
     <ThemeToggle />
-  </nav>
+  </div>
 </header>
 
 <style>
   header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background-color: var(--bg);
     border-bottom: 1px solid var(--border);
-    padding: 0 1.5rem;
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding: var(--space-3) var(--space-4);
+    height: 3.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .inner {
+      padding-inline: var(--space-6);
+    }
+  }
+
+  .logo {
+    font-family: var(--font-mono);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-base);
+    color: var(--fg);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+    transition: color var(--transition-fast) ease;
+  }
+
+  .logo:hover {
+    color: var(--accent);
   }
 
   nav {
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    max-width: 65ch;
-    margin: 0 auto;
-    height: 3.5rem;
+    gap: var(--space-5);
+    margin-inline-start: auto;
   }
 
-  .logo {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--accent);
-    text-decoration: none;
-    letter-spacing: -0.02em;
-    flex-shrink: 0;
-  }
-
-  .logo:hover {
-    opacity: 0.85;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 1.25rem;
-    flex: 1;
-  }
-
-  .nav-links a {
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
     color: var(--fg-muted);
-    font-size: 0.875rem;
     text-decoration: none;
-    transition: color 150ms ease;
+    transition: color var(--transition-fast) ease;
   }
 
-  .nav-links a:hover {
+  .nav-link:hover {
     color: var(--fg);
+  }
+
+  .nav-link.active {
+    color: var(--fg);
+  }
+
+  @media (max-width: 420px) {
+    .inner {
+      gap: var(--space-3);
+    }
+    nav {
+      gap: var(--space-3);
+    }
   }
 </style>
