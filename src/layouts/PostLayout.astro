@@ -4,6 +4,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 import Prose from '~/components/ui/Prose.astro';
 import Divider from '~/components/ui/Divider.astro';
 import Tag from '~/components/ui/Tag.astro';
+import { getReadingTime, formatDate } from '~/lib/posts';
 
 interface Props {
   post: CollectionEntry<'posts'>;
@@ -12,16 +13,9 @@ interface Props {
 const { post } = Astro.props;
 const { title, description, date, updated, tags, difficulty } = post.data;
 
-const wordCount = (post.body ?? '').trim().split(/\s+/).filter(Boolean).length;
-const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
-const dateStr = dateFormatter.format(date);
-const updatedStr = updated ? dateFormatter.format(updated) : null;
+const readingTime = getReadingTime(post.body ?? '');
+const dateStr = formatDate(date);
+const updatedStr = updated ? formatDate(updated) : null;
 ---
 
 <BaseLayout
@@ -93,9 +87,9 @@ const updatedStr = updated ? dateFormatter.format(updated) : null;
     text-transform: lowercase;
   }
   .difficulty-easy   { color: #57ab5a; }
-  .difficulty-medium { color: #e3b341; }
-  .difficulty-hard   { color: #f47067; }
-  .difficulty-insane { color: #a475f9; }
+  .difficulty-medium { color: var(--warning); }
+  .difficulty-hard   { color: color-mix(in srgb, var(--danger) 65%, var(--fg-muted)); }
+  .difficulty-insane { color: var(--danger); }
 
   h1 {
     font-size: var(--text-3xl);
