@@ -48,8 +48,9 @@ import { SITE_CONFIG } from '~/config';
     </div>
 
     <div class="hero-text">
-      <p class="terminal-prompt">lornemalvo:~$ whoami</p>
+      <p class="terminal-prompt crt-text">lornemalvo:~$ whoami</p>
       <p class="terminal-output crt-text">pablo<span class="cursor" aria-hidden="true">|</span></p>
+      <p class="hero-tagline">Pentester in training. Web security, CTFs, and notes from the field.</p>
     </div>
   </section>
 
@@ -152,10 +153,17 @@ import { SITE_CONFIG } from '~/config';
 
   .terminal-output {
     font-family: var(--font-mono);
-    font-size: var(--text-3xl);
+    font-size: var(--text-base);
     font-weight: var(--font-bold);
     color: var(--accent);
     line-height: var(--leading-tight);
+  }
+
+  .hero-tagline {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    line-height: var(--leading-normal);
+    margin-top: var(--space-3);
   }
 
   .cursor {
