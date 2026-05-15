@@ -93,7 +93,25 @@ const enabled = headings.length >= 2;
       { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
     );
 
-    targets.forEach((target) => observer.observe(target));
+    // If the page loaded with a hash (e.g. from a Pagefind result deep-link),
+    // mark that heading active up-front and delay the observer so the browser
+    // can finish scrolling to the anchor — otherwise the observer's first
+    // callback fires on the pre-scroll viewport and pins the first heading.
+    const initialHash = decodeURIComponent(window.location.hash.slice(1));
+    const hasInitialHash = initialHash !== '' && seen.has(initialHash);
+    if (hasInitialHash) {
+      setActive(initialHash);
+      clickLockUntil = performance.now() + CLICK_LOCK_MS;
+    }
+
+    const startObserving = () => {
+      targets.forEach((target) => observer.observe(target));
+    };
+    if (hasInitialHash) {
+      setTimeout(startObserving, 200);
+    } else {
+      startObserving();
+    }
 
     links.forEach((link) => {
       link.addEventListener('click', () => {
