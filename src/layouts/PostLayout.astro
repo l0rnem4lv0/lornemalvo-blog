@@ -39,7 +39,7 @@ const updatedStr = updated ? formatDate(updated) : null;
   <div class="reading-progress" aria-hidden="true"></div>
 
   <div class:list={['post-shell', { 'has-toc': hasToc }]}>
-    <article class="post" data-post-article>
+    <article class="post" data-post-article data-pagefind-body>
       <header class="post-header">
         <div class="meta">
           <time datetime={date.toISOString()}>{dateStr}</time>
@@ -71,7 +71,7 @@ const updatedStr = updated ? formatDate(updated) : null;
       </header>
 
       {hasToc && (
-        <div class="toc-mobile">
+        <div class="toc-mobile" data-pagefind-ignore>
           <TableOfContents headings={tocHeadings} />
         </div>
       )}
@@ -83,7 +83,7 @@ const updatedStr = updated ? formatDate(updated) : null;
       </Prose>
 
       {(prev || next) && (
-        <nav class="post-nav" aria-label="Post navigation">
+        <nav class="post-nav" aria-label="Post navigation" data-pagefind-ignore>
           <Divider />
           <div class="post-nav-grid">
             {prev ? (
