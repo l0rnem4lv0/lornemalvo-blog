@@ -38,15 +38,15 @@ const enabled = headings.length >= 2;
   // Scroll-spy: highlight the heading nearest the top of the viewport.
   const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
   if (links.length > 0) {
-    const linkById = new Map<string, HTMLAnchorElement>();
-    const targets: Element[] = [];
+    const targets: HTMLElement[] = [];
+    const seen = new Set<string>();
     links.forEach((link) => {
       const id = link.dataset.tocLink;
-      if (!id) return;
+      if (!id || seen.has(id)) return;
       const target = document.getElementById(id);
       if (target) {
-        linkById.set(id, link);
         targets.push(target);
+        seen.add(id);
       }
     });
 
@@ -54,12 +54,23 @@ const enabled = headings.length >= 2;
     const setActive = (id: string | null) => {
       if (id === activeId) return;
       activeId = id;
-      links.forEach((link) => link.classList.remove('active'));
-      if (id) linkById.get(id)?.classList.add('active');
+      // Mobile + desktop TOC each carry the same slug — toggle on every link.
+      links.forEach((link) => {
+        link.classList.toggle('active', link.dataset.tocLink === id);
+      });
     };
+
+    // After a TOC click we keep the clicked link active for a short window —
+    // the programmatic jump can leave the target outside the observer band
+    // (scroll-margin-top puts the heading above the active strip), which
+    // would otherwise let the observer race back to a stale entry.
+    let clickLockUntil = 0;
+    const CLICK_LOCK_MS = 800;
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (performance.now() < clickLockUntil) return;
+
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .map((entry) => entry.target as HTMLElement);
@@ -75,8 +86,7 @@ const enabled = headings.length >= 2;
         const scrollY = window.scrollY;
         let candidate: HTMLElement | null = null;
         for (const target of targets) {
-          const el = target as HTMLElement;
-          if (el.offsetTop - 1 <= scrollY) candidate = el;
+          if (target.offsetTop - 1 <= scrollY) candidate = target;
         }
         setActive(candidate?.id ?? targets[0]?.id ?? null);
       },
@@ -84,6 +94,15 @@ const enabled = headings.length >= 2;
     );
 
     targets.forEach((target) => observer.observe(target));
+
+    links.forEach((link) => {
+      link.addEventListener('click', () => {
+        const id = link.dataset.tocLink;
+        if (!id) return;
+        setActive(id);
+        clickLockUntil = performance.now() + CLICK_LOCK_MS;
+      });
+    });
   }
 </script>
 
