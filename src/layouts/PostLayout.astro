@@ -4,14 +4,24 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 import Prose from '~/components/ui/Prose.astro';
 import Divider from '~/components/ui/Divider.astro';
 import Tag from '~/components/ui/Tag.astro';
-import { getReadingTime, formatDate } from '~/lib/posts';
+import TableOfContents from '~/components/TableOfContents.astro';
+import { getHeadings, getReadingTime, formatDate } from '~/lib/posts';
+import type { TocHeading } from '~/lib/posts';
+import type { MarkdownHeading } from 'astro';
 
 interface Props {
   post: CollectionEntry<'posts'>;
+  headings?: MarkdownHeading[];
+  prev?: CollectionEntry<'posts'> | null;
+  next?: CollectionEntry<'posts'> | null;
 }
 
-const { post } = Astro.props;
-const { title, description, date, updated, tags, difficulty } = post.data;
+const { post, headings = [], prev = null, next = null } = Astro.props;
+const { title, description, date, updated, tags, difficulty, category } =
+  post.data;
+
+const tocHeadings: TocHeading[] = getHeadings(headings);
+const hasToc = tocHeadings.length >= 2;
 
 const readingTime = getReadingTime(post.body ?? '');
 const dateStr = formatDate(date);
@@ -24,50 +34,164 @@ const updatedStr = updated ? formatDate(updated) : null;
   ogType="article"
   publishDate={date}
   tags={tags}
+  wide={hasToc}
 >
-  <article>
-    <header class="post-header">
-      <div class="meta">
-        <time datetime={date.toISOString()}>{dateStr}</time>
-        <span aria-hidden="true">·</span>
-        <span>{readingTime} min read</span>
-        {difficulty && <span aria-hidden="true">·</span>}
-        {difficulty && (
-          <span class:list={['difficulty', `difficulty-${difficulty}`]}>
-            {difficulty}
-          </span>
+  <div class="reading-progress" aria-hidden="true"></div>
+
+  <div class:list={['post-shell', { 'has-toc': hasToc }]}>
+    <article class="post" data-post-article>
+      <header class="post-header">
+        <div class="meta">
+          <time datetime={date.toISOString()}>{dateStr}</time>
+          <span aria-hidden="true">·</span>
+          <span>{readingTime} min read</span>
+          <span aria-hidden="true">·</span>
+          <span class="category">{category}</span>
+          {difficulty && <span aria-hidden="true">·</span>}
+          {difficulty && (
+            <span class:list={['difficulty', `difficulty-${difficulty}`]}>
+              {difficulty}
+            </span>
+          )}
+        </div>
+
+        <h1>{title}</h1>
+
+        {description && <p class="description">{description}</p>}
+
+        {tags.length > 0 && (
+          <ul class="tags">
+            {tags.map((tag) => (
+              <li><Tag name={tag} /></li>
+            ))}
+          </ul>
         )}
-      </div>
 
-      <h1>{title}</h1>
+        {updatedStr && <p class="updated">Updated: {updatedStr}</p>}
+      </header>
 
-      {description && <p class="description">{description}</p>}
-
-      {tags.length > 0 && (
-        <ul class="tags">
-          {tags.map((tag) => (
-            <li><Tag name={tag} /></li>
-          ))}
-        </ul>
+      {hasToc && (
+        <div class="toc-mobile">
+          <TableOfContents headings={tocHeadings} />
+        </div>
       )}
 
-      {updatedStr && <p class="updated">Updated: {updatedStr}</p>}
-    </header>
+      <Divider />
 
-    <Divider />
+      <Prose>
+        <slot />
+      </Prose>
 
-    <Prose>
-      <slot />
-    </Prose>
-  </article>
+      {(prev || next) && (
+        <nav class="post-nav" aria-label="Post navigation">
+          <Divider />
+          <div class="post-nav-grid">
+            {prev ? (
+              <a class="nav-card nav-prev" href={`/posts/${prev.id}`}>
+                <span class="nav-label">← Previous</span>
+                <span class="nav-title">{prev.data.title}</span>
+              </a>
+            ) : (
+              <span class="nav-card nav-empty" aria-hidden="true"></span>
+            )}
+            {next ? (
+              <a class="nav-card nav-next" href={`/posts/${next.id}`}>
+                <span class="nav-label">Next →</span>
+                <span class="nav-title">{next.data.title}</span>
+              </a>
+            ) : (
+              <span class="nav-card nav-empty" aria-hidden="true"></span>
+            )}
+          </div>
+        </nav>
+      )}
+    </article>
+
+    {hasToc && (
+      <aside class="toc-desktop">
+        <TableOfContents headings={tocHeadings} />
+      </aside>
+    )}
+  </div>
 </BaseLayout>
 
+<script>
+  // Reading-progress bar: tracks scroll over the current article.
+  const article = document.querySelector<HTMLElement>('[data-post-article]');
+  const bar = document.querySelector<HTMLElement>('.reading-progress');
+  if (article && bar) {
+    const update = () => {
+      const rect = article.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      const articleTop = rect.top + window.scrollY;
+      const articleHeight = article.offsetHeight;
+      const distance = articleHeight - viewport;
+      const scrolled = Math.max(0, window.scrollY - articleTop);
+      const ratio = distance > 0 ? Math.min(1, scrolled / distance) : 0;
+      bar.style.setProperty('--progress', `${(ratio * 100).toFixed(2)}%`);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  }
+</script>
+
 <style>
-  article {
+  /* ── Reading progress bar ── */
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: var(--progress, 0%);
+    background: var(--accent);
+    z-index: calc(var(--z-sticky) + 1);
+    transition: width 80ms linear;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reading-progress { transition: none; }
+  }
+
+  /* ── Shell ── */
+  .post-shell {
+    display: block;
+  }
+
+  .post {
     max-width: var(--measure);
     margin-inline: auto;
   }
 
+  /* Two-column layout activates when TOC is present */
+  @media (min-width: 1024px) {
+    .post-shell.has-toc {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 240px;
+      gap: var(--space-10);
+      align-items: start;
+      max-width: var(--container-wide);
+      margin-inline: auto;
+    }
+    .post-shell.has-toc .post {
+      max-width: none;
+      margin-inline: 0;
+    }
+  }
+
+  .toc-desktop { display: none; }
+
+  @media (min-width: 1024px) {
+    .has-toc .toc-desktop { display: block; }
+    .has-toc .toc-mobile  { display: none; }
+  }
+
+  .toc-mobile {
+    margin: var(--space-6) 0 var(--space-2);
+  }
+
+  /* ── Header ── */
   .post-header {
     margin-bottom: var(--space-2);
   }
@@ -80,6 +204,16 @@ const updatedStr = updated ? formatDate(updated) : null;
     font-size: var(--text-xs);
     color: var(--fg-muted);
     margin-bottom: var(--space-3);
+  }
+
+  .category {
+    font-family: var(--font-mono);
+    text-transform: lowercase;
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.45em;
+    line-height: 1.3;
   }
 
   .difficulty {
@@ -116,5 +250,68 @@ const updatedStr = updated ? formatDate(updated) : null;
     font-size: var(--text-xs);
     color: var(--fg-muted);
     margin-top: var(--space-3);
+  }
+
+  /* ── Prev/Next nav ── */
+  .post-nav {
+    margin-top: var(--space-10);
+  }
+
+  .post-nav-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .post-nav-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+    }
+  }
+
+  .nav-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--fg);
+    transition:
+      border-color var(--transition-fast) ease,
+      color var(--transition-fast) ease;
+  }
+
+  .nav-card:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .nav-empty {
+    border: none;
+    padding: 0;
+  }
+
+  .nav-next { text-align: right; }
+
+  .nav-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+  }
+
+  .nav-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    line-height: var(--leading-snug);
+    /* Limit to 2 lines so long titles don't blow up the card */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 </style>
