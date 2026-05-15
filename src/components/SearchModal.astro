@@ -1,0 +1,382 @@
+---
+// SearchModal — client-side search powered by Pagefind UI.
+//
+// The Pagefind index and runtime are emitted by `pagefind --site dist` during
+// the build (see package.json). They live at `/pagefind/pagefind.js` and
+// `/pagefind/pagefind-ui.js` and are NOT available during `astro dev` — only
+// after `npm run build && npm run preview`.
+//
+// Open/close is managed via a vanilla script attached below.
+---
+
+<div
+  id="search-modal"
+  class="search-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Search"
+  aria-hidden="true"
+  hidden
+>
+  <div class="search-overlay" data-search-overlay></div>
+
+  <div class="search-panel" role="document">
+    <div class="search-panel-header">
+      <span class="search-label">Search</span>
+      <button
+        type="button"
+        class="search-close"
+        aria-label="Close search"
+        data-search-close
+      >
+        Esc
+      </button>
+    </div>
+
+    <div id="pagefind-search-ui" class="search-ui-host"></div>
+
+    <p id="search-dev-notice" class="search-dev-notice" hidden>
+      Search is unavailable in development. Run
+      <code>npm run build &amp;&amp; npm run preview</code> to test it.
+    </p>
+  </div>
+</div>
+
+<link
+  rel="stylesheet"
+  href="/pagefind/pagefind-ui.css"
+  media="all"
+  onerror="this.remove()"
+/>
+
+<script>
+  type PagefindUIInstance = {
+    triggerSearch?: (term: string) => void;
+  };
+
+  type PagefindUIConstructor = new (opts: Record<string, unknown>) => PagefindUIInstance;
+
+  declare global {
+    interface Window {
+      PagefindUI?: PagefindUIConstructor;
+      __searchModal?: {
+        open: () => void;
+        close: () => void;
+        toggle: () => void;
+      };
+    }
+  }
+
+  const modal = document.getElementById('search-modal');
+  if (!modal) {
+    throw new Error('SearchModal: root element not found');
+  }
+
+  const overlay = modal.querySelector<HTMLElement>('[data-search-overlay]');
+  const closeBtn = modal.querySelector<HTMLElement>('[data-search-close]');
+  const uiHost = modal.querySelector<HTMLElement>('#pagefind-search-ui');
+  const devNotice = modal.querySelector<HTMLElement>('#search-dev-notice');
+
+  let uiInitialized = false;
+  let lastFocused: HTMLElement | null = null;
+
+  const FOCUSABLE = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'textarea:not([disabled])',
+    'select:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(',');
+
+  function getFocusable(): HTMLElement[] {
+    return Array.from(modal!.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+      (el) => !el.hasAttribute('hidden') && el.offsetParent !== null,
+    );
+  }
+
+  function loadScript(src: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector<HTMLScriptElement>(
+        `script[data-pagefind-ui-src="${src}"]`,
+      );
+      if (existing) {
+        if (existing.dataset.loaded === 'true') resolve();
+        else {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error('load failed')), { once: true });
+        }
+        return;
+      }
+      const tag = document.createElement('script');
+      tag.src = src;
+      tag.async = true;
+      tag.dataset.pagefindUiSrc = src;
+      tag.addEventListener(
+        'load',
+        () => {
+          tag.dataset.loaded = 'true';
+          resolve();
+        },
+        { once: true },
+      );
+      tag.addEventListener('error', () => reject(new Error('load failed')), { once: true });
+      document.head.appendChild(tag);
+    });
+  }
+
+  async function initPagefindUI() {
+    if (uiInitialized || !uiHost) return;
+
+    try {
+      // Path is resolved at runtime from the deployed site (the Pagefind
+      // bundle is emitted by `pagefind --site dist` post-build), so it
+      // must not be statically analysable by rollup.
+      await loadScript('/pagefind/pagefind-ui.js');
+    } catch {
+      if (devNotice) devNotice.hidden = false;
+      return;
+    }
+
+    const PagefindUI = window.PagefindUI;
+    if (!PagefindUI) {
+      if (devNotice) devNotice.hidden = false;
+      return;
+    }
+
+    new PagefindUI({
+      element: '#pagefind-search-ui',
+      showImages: false,
+      showSubResults: true,
+      resetStyles: false,
+      autofocus: true,
+      placeholder: 'Search posts…',
+    });
+
+    uiInitialized = true;
+  }
+
+  function focusSearchInput() {
+    const input = uiHost?.querySelector<HTMLInputElement>('input[type="text"]');
+    if (input) {
+      input.focus();
+      return true;
+    }
+    return false;
+  }
+
+  function open() {
+    if (!modal!.hasAttribute('hidden')) return;
+    lastFocused = document.activeElement as HTMLElement | null;
+    modal!.hidden = false;
+    modal!.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+
+    void initPagefindUI().then(() => {
+      // Pagefind UI builds its input asynchronously; retry briefly so
+      // the user lands inside the search field once it materialises.
+      if (!focusSearchInput()) {
+        const start = Date.now();
+        const tick = () => {
+          if (focusSearchInput()) return;
+          if (Date.now() - start > 500) {
+            closeBtn?.focus();
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    });
+  }
+
+  function close() {
+    if (modal!.hasAttribute('hidden')) return;
+    modal!.hidden = true;
+    modal!.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
+    if (lastFocused && document.contains(lastFocused)) {
+      lastFocused.focus();
+    }
+  }
+
+  function toggle() {
+    if (modal!.hasAttribute('hidden')) open();
+    else close();
+  }
+
+  window.__searchModal = { open, close, toggle };
+
+  overlay?.addEventListener('click', close);
+  closeBtn?.addEventListener('click', close);
+
+  modal!.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+      return;
+    }
+    if (event.key === 'Tab') {
+      const focusables = getFocusable();
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+</script>
+
+<style is:global>
+  /* ── Modal shell ── */
+  .search-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+  }
+  .search-modal[hidden] {
+    display: none;
+  }
+
+  .search-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+  [data-theme='light'] .search-overlay {
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .search-panel {
+    position: absolute;
+    top: 12vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(600px, 90vw);
+    max-height: 76vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+
+  .search-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+  }
+
+  .search-close {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.15rem 0.45rem;
+    line-height: 1.3;
+    background: transparent;
+    cursor: pointer;
+    transition:
+      color var(--transition-fast) ease,
+      border-color var(--transition-fast) ease;
+  }
+  .search-close:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .search-ui-host {
+    overflow-y: auto;
+    padding: var(--space-4);
+  }
+
+  .search-dev-notice {
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    border-top: 1px solid var(--border);
+  }
+  .search-dev-notice code {
+    font-size: 0.85em;
+  }
+
+  /* ── Pagefind UI theming ──
+   * Re-map Pagefind's CSS variables onto the blog palette so the widget
+   * looks native in both themes. See:
+   * https://pagefind.app/docs/ui/#customising-the-styles
+   */
+  .search-ui-host {
+    --pagefind-ui-scale: 0.9;
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--fg);
+    --pagefind-ui-background: var(--bg-soft);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-tag: var(--bg);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: var(--radius-md);
+    --pagefind-ui-image-border-radius: var(--radius-md);
+    --pagefind-ui-image-box-ratio: 3 / 2;
+    --pagefind-ui-font: var(--font-sans);
+  }
+
+  .search-ui-host .pagefind-ui__search-input {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+  }
+  .search-ui-host .pagefind-ui__search-input::placeholder {
+    color: var(--fg-muted);
+  }
+
+  .search-ui-host .pagefind-ui__result {
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-3);
+  }
+  .search-ui-host .pagefind-ui__result:first-child {
+    border-top: none;
+    padding-top: var(--space-2);
+  }
+
+  .search-ui-host .pagefind-ui__result-title a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .search-ui-host .pagefind-ui__result-title a:hover {
+    color: var(--accent);
+  }
+
+  .search-ui-host .pagefind-ui__result-excerpt {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+  }
+  .search-ui-host .pagefind-ui__result-excerpt mark {
+    background: var(--accent-dim);
+    color: var(--fg);
+  }
+
+  .search-ui-host .pagefind-ui__message,
+  .search-ui-host .pagefind-ui__suppressed {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+  }
+</style>
