@@ -4,19 +4,27 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 import PostCard from '~/components/PostCard.astro';
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
-const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = allPosts.sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const count = posts.length;
+const countLabel = `${count} ${count === 1 ? 'post' : 'posts'}`;
 ---
 
 <BaseLayout
   title="Posts"
-  description="Writeups, articles, and notes by Lornemalvo."
-  wide
+  description="All writeups, articles, and notes by Lornemalvo, ordered by date."
 >
-  <h1 class="page-title">posts</h1>
-  {posts.length === 0 ? (
+  <header class="page-header">
+    <h1>Posts</h1>
+    <p class="count">{countLabel}</p>
+  </header>
+
+  {count === 0 ? (
     <p class="empty">No posts yet.</p>
   ) : (
-    <div>
+    <div class="posts-list">
       {posts.map((post, index) => (
         <PostCard post={post} showDivider={index > 0} />
       ))}
@@ -25,18 +33,25 @@ const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueO
 </BaseLayout>
 
 <style>
-  .page-title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: var(--fg-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  .page-header {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-8);
+  }
+
+  .page-header h1 {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
     margin-bottom: var(--space-2);
+  }
+
+  .count {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
   }
 
   .empty {
     color: var(--fg-muted);
     font-size: var(--text-sm);
-    margin-top: var(--space-8);
   }
 </style>
