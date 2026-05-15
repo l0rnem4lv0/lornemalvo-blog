@@ -1,64 +1,82 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Tag from '~/components/ui/Tag.astro';
+import { getTagCounts } from '~/lib/tags';
 
 const posts = await getCollection('posts', ({ data }) => !data.draft);
-const tagCounts = posts.reduce<Record<string, number>>((acc, post) => {
-  post.data.tags.forEach((tag) => {
-    acc[tag] = (acc[tag] ?? 0) + 1;
-  });
-  return acc;
-}, {});
+const tags = [...getTagCounts(posts).entries()].sort((a, b) => {
+  if (b[1] !== a[1]) return b[1] - a[1];
+  return a[0].localeCompare(b[0]);
+});
 
-const tags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+const total = tags.length;
+const totalLabel = `${total} ${total === 1 ? 'tag' : 'tags'}`;
 ---
 
-<BaseLayout title="Tags">
-  <h1 class="page-title">tags</h1>
-  <ul class="tag-list">
-    {tags.map(([tag, count]) => (
-      <li>
-        <a href={`/tags/${tag}`}>
-          #{tag}
-          <span class="count">{count}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
+<BaseLayout
+  title="Tags"
+  description="Browse all tags used across writeups, articles, and notes."
+>
+  <header class="page-header">
+    <h1>Tags</h1>
+    <p class="count">{totalLabel}</p>
+  </header>
+
+  {total === 0 ? (
+    <p class="empty">No tags yet.</p>
+  ) : (
+    <ul class="tag-list">
+      {tags.map(([tag, count]) => (
+        <li>
+          <Tag name={tag} />
+          <span class="count-inline">{count}</span>
+        </li>
+      ))}
+    </ul>
+  )}
 </BaseLayout>
 
 <style>
-  .page-title {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--fg-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 1.5rem;
+  .page-header {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-8);
   }
 
-  .tag-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .tag-list a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--fg);
-    font-size: 0.9375rem;
-  }
-
-  .tag-list a:hover {
-    color: var(--accent);
-    text-decoration: none;
+  .page-header h1 {
+    font-family: var(--font-mono);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    color: var(--accent-white);
+    letter-spacing: -0.04em;
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-3);
   }
 
   .count {
-    font-size: 0.75rem;
+    font-size: var(--text-sm);
     color: var(--fg-muted);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .tag-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .count-inline {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+
+  .empty {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
   }
 </style>
