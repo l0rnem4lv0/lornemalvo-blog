@@ -78,6 +78,12 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
   updated?: Date
 }
 
+## Visual testing
+
+agent-browser is available for browser automation.
+Use it to verify layout, interactions and computed styles
+before asking the user for manual verification.
+
 ## Vertical rhythm (prose / markdown rendering)
 
 CRITICAL: vertical spacing must be SYMMETRIC around block elements.
