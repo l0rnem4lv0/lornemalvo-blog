@@ -3,6 +3,7 @@ import '~/styles/global.css';
 import ThemeScript from '~/components/ThemeScript.astro';
 import Header from '~/components/Header.astro';
 import Footer from '~/components/Footer.astro';
+import SearchModal from '~/components/SearchModal.astro';
 import Container from '~/components/ui/Container.astro';
 import { SITE_CONFIG } from '~/config';
 
@@ -96,6 +97,22 @@ const ogImageURL = new URL(ogImage, Astro.site);
       </Container>
     </main>
     <Footer />
+    <SearchModal />
+
+    <script>
+      // Global Cmd+K / Ctrl+K shortcut.
+      // Browsers do not bind this combo by default, so preventDefault is safe.
+      document.addEventListener('keydown', (event) => {
+        const isModK =
+          (event.metaKey || event.ctrlKey) &&
+          !event.shiftKey &&
+          !event.altKey &&
+          (event.key === 'k' || event.key === 'K');
+        if (!isModK) return;
+        event.preventDefault();
+        window.__searchModal?.toggle();
+      });
+    </script>
   </body>
 </html>
 
