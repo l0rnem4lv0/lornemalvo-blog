@@ -201,6 +201,15 @@ src/content/posts/
 - `RECENT_POSTS_COUNT` controls posts shown on home — editorial config, not env var
 - Social URLs in SITE_CONFIG — update before deploy
 
+## About page
+
+- Avatar placeholder: iniciales "LM" SVG en src/pages/about.astro
+- Real avatar goes in src/content/about/avatar.png (min 240x240px)
+- When avatar is ready: update img src in about.astro hero section
+- Use image-rendering: pixelated for pixel art
+- HTB profile: https://app.hackthebox.com/u/l0rnemalv0
+- Contact email: vilallavepablo@gmail.com
+
 ## No hacer
 - No instalar React/Vue/Svelte salvo necesidad concreta
 - No usar CSS-in-JS
