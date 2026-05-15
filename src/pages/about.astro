@@ -6,11 +6,6 @@
 //           import avatarImage from '../content/about/avatar.png';
 //           <Image src={avatarImage} alt="Lornemalvo" width={120} height={120} class="avatar" />
 //
-// UPDATE BEFORE DEPLOY:
-//   - GITHUB_URL and TWITTER_URL in src/config.ts
-//   - Email address in the Contact section below.
-//   - HackTheBox profile URL in the Platforms section below.
-
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Divider from '~/components/ui/Divider.astro';
 import Link from '~/components/ui/Link.astro';
@@ -88,8 +83,7 @@ import { SITE_CONFIG } from '~/config';
   <section aria-labelledby="platforms-heading">
     <h2 id="platforms-heading" class="section-label">Platforms</h2>
     <ul class="link-list">
-      <!-- UPDATE: replace with your real HackTheBox profile URL -->
-      <li><Link href="https://app.hackthebox.com/users/lornemalvo" external>HackTheBox</Link></li>
+      <li><Link href="https://app.hackthebox.com/u/l0rnemalv0" external>HackTheBox</Link></li>
       <li><Link href={SITE_CONFIG.GITHUB_URL} external>GitHub</Link></li>
     </ul>
   </section>
@@ -101,8 +95,7 @@ import { SITE_CONFIG } from '~/config';
     <h2 id="contact-heading" class="section-label">Contact</h2>
     <ul class="link-list">
       <li><Link href={SITE_CONFIG.TWITTER_URL} external>Twitter / X</Link></li>
-      <!-- UPDATE: replace with real email address -->
-      <li><Link href="mailto:hello@lornemalvo.com" external>hello@lornemalvo.com</Link></li>
+      <li><Link href="mailto:vilallavepablo@gmail.com" external>vilallavepablo@gmail.com</Link></li>
     </ul>
   </section>
 </BaseLayout>
