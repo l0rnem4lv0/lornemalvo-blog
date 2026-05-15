@@ -100,6 +100,17 @@ Implementation:
 
 Verified: .prose :global(.expressive-code) { margin: 1.5rem 0 }
 
+## Search (Pagefind)
+
+- Pagefind indexes only posts via data-pagefind-body in PostLayout
+- Header and Footer marked with data-pagefind-ignore
+- Search only works in production build (npm run build && npm run preview)
+- rehype-autolink-headings anchors marked data-pagefind-ignore 
+  to prevent "#" appearing in search results
+- Modal closes on any result click (same-page anchors included)
+- TOC scroll spy delayed 150ms on page load when URL has hash,
+  to let browser complete anchor scroll before Observer initializes
+
 ## Comandos
 - npm run dev — servidor local
 - npm run build — build producción
