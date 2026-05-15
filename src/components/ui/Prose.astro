@@ -40,6 +40,32 @@ const { class: className } = Astro.props;
   .prose :global(h5),
   .prose :global(h6) { margin: var(--space-5)  0 var(--space-2); }
 
+  /* Anchor links on h2/h3 — appear on heading hover, copy direct link */
+  .prose :global(h2),
+  .prose :global(h3) {
+    scroll-margin-top: calc(3.25rem + var(--space-4));
+  }
+  .prose :global(.heading-anchor) {
+    margin-left: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    font-weight: var(--font-normal);
+    color: var(--fg-muted);
+    text-decoration: none;
+    opacity: 0;
+    transition:
+      opacity var(--transition-fast) ease,
+      color var(--transition-fast) ease;
+  }
+  .prose :global(h2:hover .heading-anchor),
+  .prose :global(h3:hover .heading-anchor),
+  .prose :global(.heading-anchor:focus-visible) {
+    opacity: 1;
+  }
+  .prose :global(.heading-anchor:hover) {
+    color: var(--accent);
+  }
+
   /* Lists */
   .prose :global(ul),
   .prose :global(ol) {
