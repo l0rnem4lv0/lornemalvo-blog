@@ -14,7 +14,9 @@ export default defineConfig({
     // (Astro requires Expressive Code options to be JSON-serializable when
     // declared here, and our themeCssSelector is a function).
     expressiveCode(),
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes('/styleguide'),
+    }),
     icon(),
   ],
   markdown: {
