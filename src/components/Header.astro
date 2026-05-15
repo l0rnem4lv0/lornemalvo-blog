@@ -1,4 +1,6 @@
 ---
+import { Icon } from 'astro-icon/components';
+import IconButton from '~/components/ui/IconButton.astro';
 import ThemeToggle from '~/components/ThemeToggle.astro';
 
 const path = Astro.url.pathname;
@@ -13,7 +15,7 @@ const isActive = (href: string) =>
   path === href || path.startsWith(`${href}/`);
 ---
 
-<header>
+<header data-pagefind-ignore>
   <div class="inner">
     <a href="/" class="logo crt-text">lornemalvo</a>
     <nav aria-label="Main navigation">
@@ -27,7 +29,16 @@ const isActive = (href: string) =>
         </a>
       ))}
     </nav>
-    <ThemeToggle />
+    <div class="actions">
+      <IconButton
+        id="search-trigger"
+        label="Open search"
+        onclick="window.__searchModal && window.__searchModal.open()"
+      >
+        <Icon name="lucide:search" aria-hidden="true" />
+      </IconButton>
+      <ThemeToggle />
+    </div>
   </div>
 </header>
 
@@ -75,6 +86,12 @@ const isActive = (href: string) =>
     display: flex;
     gap: var(--space-5);
     margin-inline-start: auto;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
   }
 
   .nav-link {
