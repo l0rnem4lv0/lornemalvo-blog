@@ -196,7 +196,10 @@
     modal!.setAttribute('aria-hidden', 'true');
     document.documentElement.style.overflow = '';
     if (lastFocused && document.contains(lastFocused)) {
-      lastFocused.focus();
+      // preventScroll keeps the page where it is — important when the modal
+      // closes after a same-page anchor click (focusing the sticky header
+      // search button would otherwise scroll back to the top).
+      lastFocused.focus({ preventScroll: true });
     }
   }
 
@@ -209,6 +212,17 @@
 
   overlay?.addEventListener('click', close);
   closeBtn?.addEventListener('click', close);
+
+  // Close the modal whenever a result link is clicked. For other-page
+  // navigations the close is incidental (the page unloads anyway). For
+  // same-page anchors there is no navigation event to hook into, so this
+  // is the only way to dismiss the modal.
+  uiHost?.addEventListener('click', (event) => {
+    const link = (event.target as HTMLElement | null)?.closest('a[href]');
+    if (!link) return;
+    // Ignore Pagefind's internal "show more" buttons (rendered as <button>).
+    close();
+  });
 
   modal!.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
