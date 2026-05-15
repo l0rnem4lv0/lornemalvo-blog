@@ -210,6 +210,19 @@ src/content/posts/
 - HTB profile: https://app.hackthebox.com/u/l0rnemalv0
 - Contact email: vilallavepablo@gmail.com
 
+## Security headers
+
+- Configured in `public/_headers` (Cloudflare Pages format — copied as-is to `dist/`)
+- Applies to all routes via `/*` pattern
+- `X-Frame-Options: DENY` — clickjacking prevention (redundant with `frame-ancestors 'none'` in CSP)
+- CSP allows `unsafe-inline` for scripts: required by ThemeScript (FOUC prevention), reading
+  progress bar, and TOC scroll spy — all three are `is:inline` or Astro-bundled inline scripts
+- All resources are self-hosted: fonts via Fontsource (local woff2), images local,
+  no external CDN — so `default-src 'self'` is safe
+- `worker-src 'self' blob:` — required by Pagefind search web worker
+- To tighten CSP in future: extract inline scripts to external `.js` files and replace
+  `unsafe-inline` with specific hashes or nonces
+
 ## No hacer
 - No instalar React/Vue/Svelte salvo necesidad concreta
 - No usar CSS-in-JS
