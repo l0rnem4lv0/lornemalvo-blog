@@ -32,6 +32,9 @@ export default defineConfig({
             className: ['heading-anchor'],
             ariaHidden: 'true',
             tabIndex: -1,
+            // Keep the "#" out of the Pagefind index — otherwise it leaks
+            // into heading text in search results.
+            'data-pagefind-ignore': '',
           },
           content: { type: 'text', value: '#' },
         },
