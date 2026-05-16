@@ -35,7 +35,9 @@ const enabled = headings.length >= 2;
 )}
 
 <script>
-  // Scroll-spy: highlight the heading nearest the top of the viewport.
+  // Scroll-spy: deterministic — active heading is the last one whose top
+  // is at or above the threshold line (header height + 20px). This is
+  // direction-agnostic: ascending and descending scroll give the same result.
   const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
   if (links.length > 0) {
     const targets: HTMLElement[] = [];
@@ -54,63 +56,53 @@ const enabled = headings.length >= 2;
     const setActive = (id: string | null) => {
       if (id === activeId) return;
       activeId = id;
-      // Mobile + desktop TOC each carry the same slug — toggle on every link.
       links.forEach((link) => {
         link.classList.toggle('active', link.dataset.tocLink === id);
       });
     };
 
-    // After a TOC click we keep the clicked link active for a short window —
-    // the programmatic jump can leave the target outside the observer band
-    // (scroll-margin-top puts the heading above the active strip), which
-    // would otherwise let the observer race back to a stale entry.
+    const headerEl = document.querySelector<HTMLElement>('header');
+    const OFFSET = (headerEl?.offsetHeight ?? 52) + 20;
+
+    const getActiveId = (): string | null => {
+      let candidate: HTMLElement | null = null;
+      for (const target of targets) {
+        if (target.getBoundingClientRect().top <= OFFSET) {
+          candidate = target;
+        } else {
+          break; // targets are in DOM order; once past threshold we can stop
+        }
+      }
+      return candidate?.id ?? null;
+    };
+
+    // After a TOC click, lock briefly so the programmatic scroll doesn't
+    // immediately override the clicked heading before the page settles.
     let clickLockUntil = 0;
     const CLICK_LOCK_MS = 800;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (performance.now() < clickLockUntil) return;
+    let rafPending = false;
+    const onScroll = () => {
+      if (performance.now() < clickLockUntil) return;
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(() => {
+        rafPending = false;
+        setActive(getActiveId());
+      });
+    };
 
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .map((entry) => entry.target as HTMLElement);
+    window.addEventListener('scroll', onScroll, { passive: true });
 
-        if (visible.length > 0) {
-          // Highest-on-page wins.
-          visible.sort((a, b) => a.offsetTop - b.offsetTop);
-          setActive(visible[0].id);
-          return;
-        }
-
-        // Nothing in the band — fall back to the heading just above viewport.
-        const scrollY = window.scrollY;
-        let candidate: HTMLElement | null = null;
-        for (const target of targets) {
-          if (target.offsetTop - 1 <= scrollY) candidate = target;
-        }
-        setActive(candidate?.id ?? targets[0]?.id ?? null);
-      },
-      { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
-    );
-
-    // If the page loaded with a hash (e.g. from a Pagefind result deep-link),
-    // mark that heading active up-front and delay the observer so the browser
-    // can finish scrolling to the anchor — otherwise the observer's first
-    // callback fires on the pre-scroll viewport and pins the first heading.
+    // If the page loaded with a hash, mark it active and wait for the browser
+    // to finish scrolling to the anchor before recalculating from position.
     const initialHash = decodeURIComponent(window.location.hash.slice(1));
-    const hasInitialHash = initialHash !== '' && seen.has(initialHash);
-    if (hasInitialHash) {
+    if (initialHash && seen.has(initialHash)) {
       setActive(initialHash);
       clickLockUntil = performance.now() + CLICK_LOCK_MS;
-    }
-
-    const startObserving = () => {
-      targets.forEach((target) => observer.observe(target));
-    };
-    if (hasInitialHash) {
-      setTimeout(startObserving, 200);
+      setTimeout(() => setActive(getActiveId()), 200);
     } else {
-      startObserving();
+      setActive(getActiveId());
     }
 
     links.forEach((link) => {
