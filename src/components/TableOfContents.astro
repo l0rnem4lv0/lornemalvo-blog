@@ -105,10 +105,24 @@ const enabled = headings.length >= 2;
       setActive(getActiveId());
     }
 
+    // Intercept clicks: scroll manually and use replaceState so each TOC
+    // jump doesn't push a new entry onto the history stack — otherwise
+    // "back" walks through hashes instead of leaving the page.
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
     links.forEach((link) => {
-      link.addEventListener('click', () => {
+      link.addEventListener('click', (event) => {
         const id = link.dataset.tocLink;
         if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({
+          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+          block: 'start',
+        });
+        history.replaceState(null, '', `#${id}`);
         setActive(id);
         clickLockUntil = performance.now() + CLICK_LOCK_MS;
       });
