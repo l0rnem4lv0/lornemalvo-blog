@@ -151,6 +151,8 @@ html {
 
 body {
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   font-size: var(--text-base);
 }
 
