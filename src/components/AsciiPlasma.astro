@@ -109,11 +109,22 @@ const {
     };
 
     // Colours come from the live palette tokens, not baked-in hexes.
+    // --plasma-base is the darkest stop and the one worth tuning; see global.css.
     const css = getComputedStyle(document.documentElement);
-    const stops: RGB[] = ['--accent-dim', '--accent', '--accent-white']
-      .map((token) => css.getPropertyValue(token))
-      .filter(Boolean)
-      .map(hexToRgb);
+    const readStop = (token: string, fallback: string): RGB => {
+      const value = css.getPropertyValue(token).trim();
+      if (value) return hexToRgb(value);
+      // Warn rather than drop: a mistyped token would otherwise silently
+      // shorten the ramp and quietly change the gradient.
+      console.warn(`[ascii-plasma] unknown CSS token ${token}, using ${fallback}`);
+      return hexToRgb(fallback);
+    };
+
+    const stops: RGB[] = [
+      readStop('--plasma-base', '#0e2119'),
+      readStop('--accent', '#00ff9c'),
+      readStop('--accent-white', '#c6ffd1'),
+    ];
 
     const rampColor = (t: number): RGB => {
       const span = stops.length - 1;

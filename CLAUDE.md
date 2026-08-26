@@ -163,8 +163,10 @@ src/content/posts/
 - `src/components/AsciiPlasma.astro`, mounted once in `BaseLayout` before `<Header />`.
 - Canvas at `position: fixed; z-index: -1` — paints above the propagated `html`
   background and below all content, so no wrapper needs its own stacking context.
-- Colours are read live from `--accent-dim` / `--accent` / `--accent-white`, never
-  hardcoded, so the layer follows the palette.
+- Colours are read live from `--plasma-base` / `--accent` / `--accent-white`, never
+  hardcoded, so the layer follows the palette. `--plasma-base` is the darkest stop
+  and exists solely for this effect — darken it to calm the background without
+  touching link/button underlines, which use `--accent-dim`.
 - Tuning knobs are component props (`opacity`, `cellSize`, `speed`, `scale`,
   `levels`, `contrast`, `scanlines`, `flicker`). `opacity` is the subtlety dial.
 - Cost controls: 24fps cap, DPR capped at 1.5, blank glyph level skipped, one

@@ -75,6 +75,10 @@
   --accent:     #00ff9c;
   --accent-white: #c6ffd1;
   --accent-dim: #1a3d2e;
+  /* Darkest stop of the ASCII plasma ramp. Decorative only — kept separate
+     from --accent-dim so tuning the background never touches link and button
+     underlines. Lower = subtler background. */
+  --plasma-base: #0e2119;
   --border:     #1f1f1f;
   --danger:     #ff5555;
   --warning:    #f1fa8c;
