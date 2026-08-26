@@ -221,6 +221,47 @@ const {
       ctx.globalAlpha = 1;
     };
 
+    /* Any texture painted over --bg lifts the average tone, so a flat surface
+       filled with --bg reads darker than the area showing the effect. Measure
+       what the layer actually composites to and publish it as --bg-flat, so
+       opaque surfaces (header, post reading veil) can match the field instead
+       of hardcoding a constant that silently drifts whenever the effect is
+       retuned. */
+    const publishFlatTone = () => {
+      try {
+        const { width, height } = canvas;
+        if (!width || !height) return;
+        const pixels = ctx.getImageData(0, 0, width, height).data;
+        // Every 4th pixel: an average this large does not need every sample.
+        const STEP = 16;
+        let sumR = 0;
+        let sumG = 0;
+        let sumB = 0;
+        let sumA = 0;
+        let n = 0;
+        for (let i = 0; i < pixels.length; i += STEP) {
+          const a = pixels[i + 3] / 255;
+          sumR += pixels[i] * a;
+          sumG += pixels[i + 1] * a;
+          sumB += pixels[i + 2] * a;
+          sumA += a;
+          n++;
+        }
+        if (!n) return;
+        const layerAlpha = Number.parseFloat(getComputedStyle(canvas).opacity) || 0;
+        const base = hexToRgb(css.getPropertyValue('--bg').trim() || '#050505');
+        const meanA = sumA / n;
+        const mix = (sumC: number, baseC: number) =>
+          Math.round(baseC * (1 - meanA * layerAlpha) + (sumC / n) * layerAlpha);
+        document.documentElement.style.setProperty(
+          '--bg-flat',
+          `rgb(${mix(sumR, base[0])} ${mix(sumG, base[1])} ${mix(sumB, base[2])})`,
+        );
+      } catch {
+        // getImageData can throw on a tainted canvas; the CSS fallback covers it.
+      }
+    };
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let raf = 0;
     let last = 0;
@@ -239,11 +280,11 @@ const {
 
     const start = () => {
       stop();
-      if (reduceMotion.matches) {
-        // Static single frame: the texture stays, the motion does not.
-        draw(0);
-        return;
-      }
+      // Draw once up front so there is a frame to measure the tone from.
+      draw(reduceMotion.matches ? 0 : performance.now() * 0.001 * speed);
+      publishFlatTone();
+      // Static single frame under reduced motion: texture stays, motion does not.
+      if (reduceMotion.matches) return;
       raf = requestAnimationFrame(loop);
     };
 

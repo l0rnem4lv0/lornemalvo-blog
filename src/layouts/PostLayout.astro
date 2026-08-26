@@ -176,8 +176,8 @@ const updatedStr = updated ? formatDate(updated) : null;
    * Horizontal fade lives in the gradient and vertical fade in the mask, so
    * this needs no mask-composite (which Safari only took late). */
   .post::before {
-    --veil-fade-x: var(--space-24);
-    --veil-fade-y: var(--space-16);
+    --veil-fade-x: var(--space-6);
+    --veil-fade-y: var(--space-6);
 
     content: '';
     position: absolute;
@@ -187,8 +187,8 @@ const updatedStr = updated ? formatDate(updated) : null;
     background: linear-gradient(
       to right,
       transparent 0,
-      var(--bg) var(--veil-fade-x),
-      var(--bg) calc(100% - var(--veil-fade-x)),
+      var(--bg-flat, var(--bg)) var(--veil-fade-x),
+      var(--bg-flat, var(--bg)) calc(100% - var(--veil-fade-x)),
       transparent 100%
     );
     -webkit-mask-image: linear-gradient(
@@ -207,13 +207,6 @@ const updatedStr = updated ? formatDate(updated) : null;
     );
   }
 
-  /* With the TOC alongside, a full-width bleed would wash out the plasma
-     under the sidebar too. Pull the inner edge back to roughly the gap. */
-  @media (min-width: 1024px) {
-    .post-shell.has-toc .post::before {
-      --veil-fade-x: var(--space-12);
-    }
-  }
 
   /* Two-column layout activates when TOC is present */
   @media (min-width: 1024px) {

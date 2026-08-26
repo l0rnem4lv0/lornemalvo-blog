@@ -174,6 +174,13 @@ src/content/posts/
   `visibilitychange`.
 - `prefers-reduced-motion: reduce` draws a single static frame — texture stays,
   motion stops.
+- The layer publishes `--bg-flat` on `:root` at runtime: the tone it actually
+  composites to over `--bg`, measured from its own pixels. Opaque surfaces that
+  must not read as a flat patch across the field use `var(--bg-flat, var(--bg))`
+  — currently the Header and the post reading veil. It is computed rather than
+  hardcoded so retuning opacity, `--plasma-base` or the glyph ramp cannot
+  silently desync it. At near-black levels this matters more than the raw
+  numbers suggest: 5 -> 7 is a ~40% luminance change.
 
 ### Reading veil (posts only)
 
@@ -184,6 +191,9 @@ src/content/posts/
   (`--veil-fade-x` / `--veil-fade-y`), so the gradient hits full opacity
   exactly at the text column edge whatever the column width is. Change one and
   the other follows; they must stay equal or the fade lands on the words.
+- Both are `--space-6` (24px). Raise them for a softer, wider fade; lower them
+  for a tighter edge.
+- The veil fills `--bg-flat`, not `--bg` — see below.
 - Horizontal fade is in the gradient, vertical fade in the mask — deliberately
   avoids `mask-composite`.
 - Stacking: canvas is `z-index: -2`, veil is `-1`. Both are negative so they sit

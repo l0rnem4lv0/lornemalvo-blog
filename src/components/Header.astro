@@ -45,7 +45,10 @@ const isActive = (href: string) =>
     position: sticky;
     top: 0;
     z-index: var(--z-sticky);
-    background-color: var(--bg);
+    /* Matches the tone the effect layer composites to, so the bar does not
+       read as a darker band across the field. Fallback covers the pre-JS
+       paint and the case where the canvas is unavailable. */
+    background-color: var(--bg-flat, var(--bg));
     border-bottom: 1px solid var(--border);
   }
 
