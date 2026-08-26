@@ -10,9 +10,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 export default defineConfig({
   site: 'https://lornemalvo.com',
   integrations: [
-    // Options live in ec.config.mjs so the <Code> component can read them
-    // (Astro requires Expressive Code options to be JSON-serializable when
-    // declared here, and our themeCssSelector is a function).
+    // Options live in ec.config.mjs so the <Code> component can read them.
     expressiveCode(),
     sitemap({
       filter: (page) => !page.includes('/styleguide'),

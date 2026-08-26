@@ -1,7 +1,8 @@
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 export default {
-  themes: ['github-dark-default', 'github-light-default'],
+  themes: ['github-dark-default'],
   useDarkModeMediaQuery: false,
-  themeCssSelector: (theme) =>
-    `[data-theme="${theme.name.includes('dark') ? 'dark' : 'light'}"]`,
+  // Single theme: emit it as unscoped base styles instead of wrapping it in a
+  // [data-theme=...] block that nothing on the page would ever match.
+  themeCssSelector: false,
 };
