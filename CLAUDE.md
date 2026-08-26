@@ -230,11 +230,9 @@ any more. That rule existed only for the old veil and is gone.
 
 ## About page
 
-- Avatar: `src/content/about/avatar.jpg` (915x915), rendered through `<Image>`
-  at 150x150 with `densities={[1, 2]}`. Astro emits WebP at both densities —
-  678KB of JPEG becomes ~4KB.
-- `loading="eager"`: the avatar is above the fold, so Astro's lazy default
-  would hold back LCP.
+- Avatar: `src/content/about/avatar.jpg` (839x839), rendered through `<Image>`
+  at 300x300 and displayed at 150px by `.avatar`, so it is 2x on retina
+  without needing a `densities` srcset. Astro emits WebP: ~3.6KB served.
 - `.avatar` carries `object-fit: cover` so a non-square replacement crops
   rather than stretches.
 - Asset filenames must be lowercase. macOS is case-insensitive and Cloudflare
