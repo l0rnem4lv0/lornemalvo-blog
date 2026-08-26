@@ -67,7 +67,7 @@
 
 /* ── Color tokens ── */
 :root {
-  --bg:         #050505;
+  --bg:         #000000;
   --bg-soft:    #0c0c0c;
   --bg-code:    #080c12;
   --fg:         #e5e5e5;

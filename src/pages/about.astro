@@ -1,15 +1,10 @@
 ---
-// AVATAR: Place your avatar at src/content/about/avatar.{png,jpg,webp}
-//         Recommended size: 240×240px (displayed at 120×120 for 2× retina).
-//         Then replace the <svg> placeholder below with:
-//           import { Image } from 'astro:assets';
-//           import avatarImage from '../content/about/avatar.png';
-//           <Image src={avatarImage} alt="Lornemalvo" width={120} height={120} class="avatar" />
-//
+import { Image } from 'astro:assets';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Divider from '~/components/ui/Divider.astro';
 import Link from '~/components/ui/Link.astro';
 import { SITE_CONFIG } from '~/config';
+import avatar from '../content/about/avatar.jpg';
 ---
 
 <BaseLayout
@@ -19,27 +14,15 @@ import { SITE_CONFIG } from '~/config';
   <!-- Hero -->
   <section class="hero" aria-label="About hero">
     <div class="avatar-wrap">
-      <!-- Replace with <Image> once avatar is added to src/content/about/ -->
-      <svg
-        class="avatar-placeholder"
-        viewBox="0 0 120 120"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        role="img"
-      >
-        <rect width="150" height="150" rx="4" fill="var(--bg-soft)" />
-        <rect width="150" height="150" rx="4" fill="none" stroke="var(--border)" stroke-width="1" />
-        <text
-          x="60"
-          y="72"
-          text-anchor="middle"
-          font-family="var(--font-mono)"
-          font-size="34"
-          font-weight="700"
-          fill="var(--accent)"
-          shape-rendering="crispEdges"
-        >LM</text>
-      </svg>
+      <Image
+        src={avatar}
+        alt="Pablo, aka Lornemalvo"
+        width={150}
+        height={150}
+        densities={[1, 2]}
+        loading="eager"
+        class="avatar"
+      />
     </div>
 
     <div class="hero-text">
@@ -125,12 +108,15 @@ import { SITE_CONFIG } from '~/config';
     flex-shrink: 0;
   }
 
-  .avatar-placeholder {
+  .avatar {
     display: block;
     width: 150px;
     height: 150px;
     border-radius: var(--radius-md);
-    image-rendering: pixelated;
+    border: 1px solid var(--border);
+    /* The source is already square, so this is a no-op today — it is here so
+       a non-square replacement crops instead of stretching. */
+    object-fit: cover;
   }
 
   .hero-text {
