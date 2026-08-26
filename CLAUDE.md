@@ -174,34 +174,33 @@ src/content/posts/
   `visibilitychange`.
 - `prefers-reduced-motion: reduce` draws a single static frame — texture stays,
   motion stops.
-- The layer publishes `--bg-flat` on `:root` at runtime: the tone it actually
-  composites to over `--bg`, measured from its own pixels. Opaque surfaces that
-  must not read as a flat patch across the field use `var(--bg-flat, var(--bg))`
-  — currently the Header and the post reading veil. It is computed rather than
-  hardcoded so retuning opacity, `--plasma-base` or the glyph ramp cannot
-  silently desync it. At near-black levels this matters more than the raw
-  numbers suggest: 5 -> 7 is a ~40% luminance change.
 
-### Reading veil (posts only)
+### Why there is no flat veil
 
-- `.post::before` in `PostLayout` paints `--bg` over the plasma behind the
-  article, so body copy sits on a flat background. Posts only — other pages
-  keep the effect edge to edge.
-- The bleed and the fade distance are the same token per axis
-  (`--veil-fade-x` / `--veil-fade-y`), so the gradient hits full opacity
-  exactly at the text column edge whatever the column width is. Change one and
-  the other follows; they must stay equal or the fade lands on the words.
-- Both are `--space-6` (24px). Raise them for a softer, wider fade; lower them
-  for a tighter edge.
-- The veil fills `--bg-flat`, not `--bg` — see below.
-- Horizontal fade is in the gradient, vertical fade in the mask — deliberately
-  avoids `mask-composite`.
-- Stacking: canvas is `z-index: -2`, veil is `-1`. Both are negative so they sit
-  under all content; the order between them is what keeps the veil on top.
-- `main` needs `overflow-x: clip` or the veil's bleed widens the document on
-  narrow viewports (measured: 80px of horizontal overflow at 390px wide without
-  it). It must be `clip`, not `hidden` — `hidden` would create a scroll
-  container and break the sticky TOC.
+The field is not one colour. Sampled across a post (vertical mean per column,
+text hidden) the green channel swings from 5.00 in unlit regions to 8.19 at a
+plasma peak. So **no flat fill can match it** — pinned at the average it reads
+light against a dark patch and dark against a bright one. An earlier flat
+`--bg` veil, and a later one matched to the measured average via a `--bg-flat`
+token, both failed for this reason. Don't reintroduce either.
+
+Two consequences shape the current design:
+
+- **Reading column** — `AsciiPlasma` masks its own canvas instead of covering
+  it. `[data-post-article]` is measured on resize into `--veil-l` / `--veil-r`,
+  and `.ascii-plasma[data-veiled]` dims that band via `mask-image`. The
+  large-scale structure runs straight through the column, so there is no edge.
+  `--veil-dim` is how much effect survives inside it (0 gone, 1 untouched),
+  `--veil-soft` how far the transition takes. Horizontal only — the column
+  spans the full scroll height, so it never needs a scroll listener.
+- **Header** — opaque, because page content scrolls under it, so it would be a
+  flat band. `.header-fx` inside it mirrors the matching strip of the field
+  with one `drawImage` per frame and copies the layer's opacity at runtime.
+  The header keeps `background-color: var(--bg)`: the mirror composites the
+  field on top, so tinting the base as well would double-count it.
+
+Neither needs `overflow-x: clip` on `main` — nothing bleeds past its column
+any more. That rule existed only for the old veil and is gone.
 
 ## Pinned dependencies (do not auto-upgrade)
 

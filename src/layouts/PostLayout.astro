@@ -162,51 +162,7 @@ const updatedStr = updated ? formatDate(updated) : null;
   .post {
     max-width: var(--measure);
     margin-inline: auto;
-    position: relative;
   }
-
-  /* ── Reading veil ──
-   * Posts only: wash the plasma background out behind the article so body
-   * copy sits on flat --bg, fading at the edges rather than cutting off.
-   *
-   * The bleed and the fade distance are the same value on each axis, so the
-   * gradient reaches full opacity exactly at the text column edge — the fade
-   * always lands in the gutter, whatever the column width happens to be.
-   *
-   * Horizontal fade lives in the gradient and vertical fade in the mask, so
-   * this needs no mask-composite (which Safari only took late). */
-  .post::before {
-    --veil-fade-x: var(--space-6);
-    --veil-fade-y: var(--space-6);
-
-    content: '';
-    position: absolute;
-    inset: calc(-1 * var(--veil-fade-y)) calc(-1 * var(--veil-fade-x));
-    z-index: -1;
-    pointer-events: none;
-    background: linear-gradient(
-      to right,
-      transparent 0,
-      var(--bg-flat, var(--bg)) var(--veil-fade-x),
-      var(--bg-flat, var(--bg)) calc(100% - var(--veil-fade-x)),
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0,
-      #000 var(--veil-fade-y),
-      #000 calc(100% - var(--veil-fade-y)),
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0,
-      #000 var(--veil-fade-y),
-      #000 calc(100% - var(--veil-fade-y)),
-      transparent 100%
-    );
-  }
-
 
   /* Two-column layout activates when TOC is present */
   @media (min-width: 1024px) {

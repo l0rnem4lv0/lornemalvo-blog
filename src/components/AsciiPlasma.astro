@@ -66,6 +66,23 @@ const {
     pointer-events: none;
     opacity: var(--plasma-opacity);
   }
+
+  /* Reading column, posts only. --veil-dim is how much of the effect survives
+     inside the column (0 = gone, 1 = untouched); --veil-soft is how far the
+     transition takes. Both are meant to be tuned. */
+  .ascii-plasma[data-veiled] {
+    --veil-dim: 0.34;
+    --veil-soft: 17rem;
+    --veil-mask: linear-gradient(
+      to right,
+      #000 calc(var(--veil-l, 0px) - var(--veil-soft)),
+      rgba(0, 0, 0, var(--veil-dim)) var(--veil-l, 0px),
+      rgba(0, 0, 0, var(--veil-dim)) var(--veil-r, 100%),
+      #000 calc(var(--veil-r, 100%) + var(--veil-soft))
+    );
+    -webkit-mask-image: var(--veil-mask);
+    mask-image: var(--veil-mask);
+  }
 </style>
 
 <script>
@@ -186,6 +203,8 @@ const {
       cx = cols / 2 / scale;
       cy = rows / 2 / scale;
       buildSprites(dpr);
+      syncColumnMask();
+      if (mirror) mirror.style.opacity = getComputedStyle(canvas).opacity;
     };
 
     const field = (x: number, y: number, t: number) => {
@@ -219,47 +238,46 @@ const {
         }
       }
       ctx.globalAlpha = 1;
+      blitMirror();
     };
 
-    /* Any texture painted over --bg lifts the average tone, so a flat surface
-       filled with --bg reads darker than the area showing the effect. Measure
-       what the layer actually composites to and publish it as --bg-flat, so
-       opaque surfaces (header, post reading veil) can match the field instead
-       of hardcoding a constant that silently drifts whenever the effect is
-       retuned. */
-    const publishFlatTone = () => {
-      try {
-        const { width, height } = canvas;
-        if (!width || !height) return;
-        const pixels = ctx.getImageData(0, 0, width, height).data;
-        // Every 4th pixel: an average this large does not need every sample.
-        const STEP = 16;
-        let sumR = 0;
-        let sumG = 0;
-        let sumB = 0;
-        let sumA = 0;
-        let n = 0;
-        for (let i = 0; i < pixels.length; i += STEP) {
-          const a = pixels[i + 3] / 255;
-          sumR += pixels[i] * a;
-          sumG += pixels[i + 1] * a;
-          sumB += pixels[i + 2] * a;
-          sumA += a;
-          n++;
-        }
-        if (!n) return;
-        const layerAlpha = Number.parseFloat(getComputedStyle(canvas).opacity) || 0;
-        const base = hexToRgb(css.getPropertyValue('--bg').trim() || '#050505');
-        const meanA = sumA / n;
-        const mix = (sumC: number, baseC: number) =>
-          Math.round(baseC * (1 - meanA * layerAlpha) + (sumC / n) * layerAlpha);
-        document.documentElement.style.setProperty(
-          '--bg-flat',
-          `rgb(${mix(sumR, base[0])} ${mix(sumG, base[1])} ${mix(sumB, base[2])})`,
-        );
-      } catch {
-        // getImageData can throw on a tainted canvas; the CSS fallback covers it.
+    /* Reading column: dim the field rather than cover it.
+       The field is not one colour — sampled across a post it swings from 5.00
+       to 8.16 in green — so any flat patch reads as a different colour against
+       some part of it. Masking the canvas keeps the large-scale structure
+       running straight through the column, just quieter, so there is no edge
+       to see. Horizontal only: the column spans the whole scroll height, so
+       this never needs updating on scroll. */
+    const column = document.querySelector<HTMLElement>('[data-post-article]');
+    const syncColumnMask = () => {
+      if (!column) return;
+      const rect = column.getBoundingClientRect();
+      canvas.style.setProperty('--veil-l', `${Math.round(rect.left)}px`);
+      canvas.style.setProperty('--veil-r', `${Math.round(rect.right)}px`);
+      canvas.setAttribute('data-veiled', '');
+    };
+
+    /* The header is opaque (content scrolls under it), so it would sit as a
+       flat band across the field. Mirror the matching strip of the field into
+       a canvas inside it — one drawImage per frame — so it carries the same
+       texture instead of approximating it with a colour. */
+    const mirror = document.querySelector<HTMLCanvasElement>('[data-plasma-mirror]');
+    const mirrorCtx = mirror?.getContext('2d') ?? null;
+    const blitMirror = () => {
+      if (!mirror || !mirrorCtx) return;
+      const rect = mirror.getBoundingClientRect();
+      const w = Math.max(1, Math.ceil(rect.width * dpr));
+      const h = Math.max(1, Math.ceil(rect.height * dpr));
+      if (mirror.width !== w || mirror.height !== h) {
+        mirror.width = w;
+        mirror.height = h;
       }
+      mirrorCtx.clearRect(0, 0, w, h);
+      mirrorCtx.drawImage(
+        canvas,
+        Math.round(rect.left * dpr), Math.round(rect.top * dpr), w, h,
+        0, 0, w, h,
+      );
     };
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -282,7 +300,6 @@ const {
       stop();
       // Draw once up front so there is a frame to measure the tone from.
       draw(reduceMotion.matches ? 0 : performance.now() * 0.001 * speed);
-      publishFlatTone();
       // Static single frame under reduced motion: texture stays, motion does not.
       if (reduceMotion.matches) return;
       raf = requestAnimationFrame(loop);
