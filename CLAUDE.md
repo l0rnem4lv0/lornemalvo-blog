@@ -158,6 +158,21 @@ src/content/posts/
   the site palette; the subtle border keeps them from bleeding into the page
   background.
 
+## Background effect (AsciiPlasma)
+
+- `src/components/AsciiPlasma.astro`, mounted once in `BaseLayout` before `<Header />`.
+- Canvas at `position: fixed; z-index: -1` — paints above the propagated `html`
+  background and below all content, so no wrapper needs its own stacking context.
+- Colours are read live from `--accent-dim` / `--accent` / `--accent-white`, never
+  hardcoded, so the layer follows the palette.
+- Tuning knobs are component props (`opacity`, `cellSize`, `speed`, `scale`,
+  `levels`, `contrast`, `scanlines`, `flicker`). `opacity` is the subtlety dial.
+- Cost controls: 24fps cap, DPR capped at 1.5, blank glyph level skipped, one
+  pre-rendered sprite per level (drawImage, not fillText), rAF paused on
+  `visibilitychange`.
+- `prefers-reduced-motion: reduce` draws a single static frame — texture stays,
+  motion stops.
+
 ## Pinned dependencies (do not auto-upgrade)
 
 - @tailwindcss/vite: 4.1.18 exact (4.3.x breaks with Astro 6.3.x rolldown resolver)
@@ -198,8 +213,11 @@ src/content/posts/
 - Configured in `public/_headers` (Cloudflare Pages format — copied as-is to `dist/`)
 - Applies to all routes via `/*` pattern
 - `X-Frame-Options: DENY` — clickjacking prevention (redundant with `frame-ancestors 'none'` in CSP)
-- CSP allows `unsafe-inline` for scripts: required by the reading progress bar and the
-  TOC scroll spy — both are `is:inline` or Astro-bundled inline scripts
+- CSP allows `unsafe-inline` for scripts: required by the reading progress bar, the
+  TOC scroll spy and the ASCII plasma background — all Astro-bundled inline scripts
+- No external origin is allowed in `script-src`/`connect-src`, so third-party effect
+  or widget CDNs cannot be dropped in without weakening the policy. Reimplement
+  self-hosted instead.
 - All resources are self-hosted: fonts via Fontsource (local woff2), images local,
   no external CDN — so `default-src 'self'` is safe
 - `worker-src 'self' blob:` — required by Pagefind search web worker
