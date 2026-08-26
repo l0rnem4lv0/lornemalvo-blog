@@ -12,9 +12,8 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
 - Pagefind para búsqueda estática
 - Cloudflare Pages para hosting
 
-## Paletas (variables CSS — dual mode)
+## Paleta (variables CSS — solo oscuro)
 
-### Oscuro (default)
 --bg:         #0a0a0a
 --bg-soft:    #111111
 --bg-code:    #0d1117
@@ -26,30 +25,14 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
 --danger:     #ff5555
 --warning:    #f1fa8c
 
-### Claro
---bg:         #fafafa
---bg-soft:    #f0f0f0
---bg-code:    #f6f8fa
---fg:         #1a1a1a
---fg-muted:   #6a6a6a
---accent:     #00754d   /* darkened from #00875a for AA on #fafafa (5.51:1) */
---accent-dim: #c8e6d4
---border:     #e5e5e5
---danger:     #c41e3a
---warning:    #b45309
-
-## Toggle de tema
-- Atributo en <html>: data-theme="dark" | "light"
-- Default: prefers-color-scheme del sistema
-- Persistencia: localStorage["theme"]
-- Script inline en <head> para evitar FOUC
-- Botón toggle en Header
+Los tokens viven en `:root` y son la única definición. No hay atributo
+`data-theme`, ni toggle, ni persistencia en localStorage: cualquier
+selector `[data-theme=...]` es residuo y debe eliminarse.
 
 ## Syntax highlighting
-- Expressive Code en modo dual:
-  - dark: github-dark-default
-  - light: github-light-default
-- Cambia automáticamente con data-theme
+- Expressive Code con un solo tema: github-dark-default
+- `themeCssSelector: false` — con un único tema se emite como estilos base
+  sin envolver en un bloque `[data-theme]` que nadie llegaría a matchear
 
 ## Tipografía
 - Sans: Inter (400, 500, 600, 700)
@@ -120,7 +103,7 @@ Verified: .prose :global(.expressive-code) { margin: 1.5rem 0 }
 
 ## Principios de diseño
 - Minimalismo agresivo: si no aporta, fuera
-- Solo modo oscuro (al menos en v1)
+- Solo modo oscuro
 - Respeta prefers-reduced-motion
 - Accesibilidad AA mínimo (contraste, focus states, navegación por teclado)
 - Mobile-first
@@ -171,9 +154,9 @@ src/content/posts/
   `border-radius: var(--radius-md)` by default in `.prose`.
 - Always include descriptive `alt` text — empty `alt=""` is allowed only for
   purely decorative images.
-- For dark-only screenshots (terminal, Burp, IDE dark theme), the subtle
-  border prevents jarring transitions into light mode without needing
-  theme-specific variants.
+- Screenshots are dark-only (terminal, Burp, IDE dark theme), which matches
+  the site palette; the subtle border keeps them from bleeding into the page
+  background.
 
 ## Pinned dependencies (do not auto-upgrade)
 
@@ -215,8 +198,8 @@ src/content/posts/
 - Configured in `public/_headers` (Cloudflare Pages format — copied as-is to `dist/`)
 - Applies to all routes via `/*` pattern
 - `X-Frame-Options: DENY` — clickjacking prevention (redundant with `frame-ancestors 'none'` in CSP)
-- CSP allows `unsafe-inline` for scripts: required by ThemeScript (FOUC prevention), reading
-  progress bar, and TOC scroll spy — all three are `is:inline` or Astro-bundled inline scripts
+- CSP allows `unsafe-inline` for scripts: required by the reading progress bar and the
+  TOC scroll spy — both are `is:inline` or Astro-bundled inline scripts
 - All resources are self-hosted: fonts via Fontsource (local woff2), images local,
   no external CDN — so `default-src 'self'` is safe
 - `worker-src 'self' blob:` — required by Pagefind search web worker
