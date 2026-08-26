@@ -1,7 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
 import IconButton from '~/components/ui/IconButton.astro';
-import ThemeToggle from '~/components/ThemeToggle.astro';
 
 const path = Astro.url.pathname;
 
@@ -37,7 +36,6 @@ const isActive = (href: string) =>
       >
         <Icon name="lucide:search" aria-hidden="true" />
       </IconButton>
-      <ThemeToggle />
     </div>
   </div>
 </header>

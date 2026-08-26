@@ -11,19 +11,20 @@ import Link from '~/components/ui/Link.astro';
 import Divider from '~/components/ui/Divider.astro';
 import Prose from '~/components/ui/Prose.astro';
 
-type Swatch = { name: string; dark: string; light: string };
+type Swatch = { name: string; value: string };
 
 const palette: Swatch[] = [
-  { name: '--bg',         dark: '#0a0a0a', light: '#fafafa' },
-  { name: '--bg-soft',    dark: '#111111', light: '#f0f0f0' },
-  { name: '--bg-code',    dark: '#0d1117', light: '#f6f8fa' },
-  { name: '--fg',         dark: '#e5e5e5', light: '#1a1a1a' },
-  { name: '--fg-muted',   dark: '#888888', light: '#6a6a6a' },
-  { name: '--accent',     dark: '#00ff9c', light: '#00754d' },
-  { name: '--accent-dim', dark: '#1a3d2e', light: '#c8e6d4' },
-  { name: '--border',     dark: '#1f1f1f', light: '#e5e5e5' },
-  { name: '--danger',     dark: '#ff5555', light: '#c41e3a' },
-  { name: '--warning',    dark: '#f1fa8c', light: '#b45309' },
+  { name: '--bg',           value: '#0a0a0a' },
+  { name: '--bg-soft',      value: '#111111' },
+  { name: '--bg-code',      value: '#0d1117' },
+  { name: '--fg',           value: '#e5e5e5' },
+  { name: '--fg-muted',     value: '#888888' },
+  { name: '--accent',       value: '#00ff9c' },
+  { name: '--accent-white', value: '#c6ffd1' },
+  { name: '--accent-dim',   value: '#1a3d2e' },
+  { name: '--border',       value: '#1f1f1f' },
+  { name: '--danger',       value: '#ff5555' },
+  { name: '--warning',      value: '#f1fa8c' },
 ];
 
 const spacingScale: Array<[string, string, string]> = [
@@ -81,8 +82,7 @@ Accept: application/json`,
       <h1>Styleguide</h1>
       <p class="lede">
         Visual source of truth for tokens, typography, and components. Not
-        linked from the public navigation — toggle the theme to see every
-        token in both palettes.
+        linked from the public navigation.
       </p>
     </header>
 
@@ -90,32 +90,18 @@ Accept: application/json`,
     <section aria-labelledby="palette-heading">
       <h2 id="palette-heading">Palette</h2>
       <p class="section-lede">
-        Each row shows the same token in both palettes. The component itself
-        does not switch themes — these are static demos.
+        Every colour token, with its literal value. The site ships a single
+        dark palette.
       </p>
 
-      <div class="palette-grid">
-        <div class="palette-col" data-theme="dark">
-          <span class="palette-label">dark</span>
-          {palette.map((c) => (
-            <div class="swatch-row">
-              <span class="swatch" style={`background:${c.dark};border-color:var(--border)`}></span>
-              <code class="swatch-name">{c.name}</code>
-              <code class="swatch-hex">{c.dark}</code>
-            </div>
-          ))}
-        </div>
-
-        <div class="palette-col" data-theme="light">
-          <span class="palette-label">light</span>
-          {palette.map((c) => (
-            <div class="swatch-row">
-              <span class="swatch" style={`background:${c.light};border-color:var(--border)`}></span>
-              <code class="swatch-name">{c.name}</code>
-              <code class="swatch-hex">{c.light}</code>
-            </div>
-          ))}
-        </div>
+      <div class="palette-col">
+        {palette.map((c) => (
+          <div class="swatch-row">
+            <span class="swatch" style={`background:${c.value};border-color:var(--border)`}></span>
+            <code class="swatch-name">{c.name}</code>
+            <code class="swatch-hex">{c.value}</code>
+          </div>
+        ))}
       </div>
     </section>
 
@@ -412,29 +398,12 @@ Accept: application/json`,
   }
 
   /* Palette */
-  .palette-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
-  }
-  @media (min-width: 720px) {
-    .palette-grid { grid-template-columns: 1fr 1fr; }
-  }
   .palette-col {
     background: var(--bg);
     color: var(--fg);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: var(--space-4);
-  }
-  .palette-label {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--fg-muted);
-    margin-bottom: var(--space-3);
   }
   .swatch-row {
     display: grid;

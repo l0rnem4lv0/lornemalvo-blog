@@ -65,9 +65,8 @@
   --container-wide:  1080px;
 }
 
-/* ── Dark theme (default) ── */
-:root,
-[data-theme="dark"] {
+/* ── Color tokens ── */
+:root {
   --bg:         #0a0a0a;
   --bg-soft:    #111111;
   --bg-code:    #0d1117;
@@ -79,20 +78,6 @@
   --border:     #1f1f1f;
   --danger:     #ff5555;
   --warning:    #f1fa8c;
-}
-
-/* ── Light theme ── */
-[data-theme="light"] {
-  --bg:         #fafafa;
-  --bg-soft:    #f0f0f0;
-  --bg-code:    #f6f8fa;
-  --fg:         #1a1a1a;
-  --fg-muted:   #6a6a6a;
-  --accent:     #00754d;  /* darkened from #00875a → 5.51:1 on --bg (AA) */
-  --accent-dim: #c8e6d4;
-  --border:     #e5e5e5;
-  --danger:     #c41e3a;
-  --warning:    #b45309;
 }
 
 /* ── Tailwind theme mapping ──
@@ -144,9 +129,6 @@ html {
   color: var(--fg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition:
-    background-color var(--transition-base) ease,
-    color var(--transition-base) ease;
 }
 
 body {
@@ -280,23 +262,13 @@ a:hover {
   pointer-events: none;
 }
 
-/* Phosphor glow — dark theme (default) */
-:root .crt-text,
-[data-theme="dark"] .crt-text {
+/* Phosphor glow */
+.crt-text {
   text-shadow:
     0 0 4px  #00ff9c,
     0 0 12px #00ff9c99,
     0 0 30px #00ff9c44,
     0 0 60px #00ff9c22;
-}
-
-/* Phosphor glow — light theme (green-dark, more subtle) */
-[data-theme="light"] .crt-text {
-  text-shadow:
-    0 0 4px  #00754d,
-    0 0 12px #00754d99,
-    0 0 30px #00754d44,
-    0 0 60px #00754d22;
 }
 
 @keyframes crt-flicker {
