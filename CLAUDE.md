@@ -14,9 +14,9 @@ Aka del autor: Lornemalvo. Dominio: lornemalvo.com.
 
 ## Paleta (variables CSS — solo oscuro)
 
---bg:         #0a0a0a
---bg-soft:    #111111
---bg-code:    #0d1117
+--bg:         #050505
+--bg-soft:    #0c0c0c
+--bg-code:    #080c12
 --fg:         #e5e5e5
 --fg-muted:   #888888
 --accent:     #00ff9c
@@ -174,6 +174,24 @@ src/content/posts/
   `visibilitychange`.
 - `prefers-reduced-motion: reduce` draws a single static frame — texture stays,
   motion stops.
+
+### Reading veil (posts only)
+
+- `.post::before` in `PostLayout` paints `--bg` over the plasma behind the
+  article, so body copy sits on a flat background. Posts only — other pages
+  keep the effect edge to edge.
+- The bleed and the fade distance are the same token per axis
+  (`--veil-fade-x` / `--veil-fade-y`), so the gradient hits full opacity
+  exactly at the text column edge whatever the column width is. Change one and
+  the other follows; they must stay equal or the fade lands on the words.
+- Horizontal fade is in the gradient, vertical fade in the mask — deliberately
+  avoids `mask-composite`.
+- Stacking: canvas is `z-index: -2`, veil is `-1`. Both are negative so they sit
+  under all content; the order between them is what keeps the veil on top.
+- `main` needs `overflow-x: clip` or the veil's bleed widens the document on
+  narrow viewports (measured: 80px of horizontal overflow at 390px wide without
+  it). It must be `clip`, not `hidden` — `hidden` would create a scroll
+  container and break the sticky TOC.
 
 ## Pinned dependencies (do not auto-upgrade)
 

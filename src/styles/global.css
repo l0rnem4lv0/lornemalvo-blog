@@ -67,9 +67,9 @@
 
 /* ── Color tokens ── */
 :root {
-  --bg:         #0a0a0a;
-  --bg-soft:    #111111;
-  --bg-code:    #0d1117;
+  --bg:         #050505;
+  --bg-soft:    #0c0c0c;
+  --bg-code:    #080c12;
   --fg:         #e5e5e5;
   --fg-muted:   #888888;
   --accent:     #00ff9c;
@@ -78,7 +78,7 @@
   /* Darkest stop of the ASCII plasma ramp. Decorative only — kept separate
      from --accent-dim so tuning the background never touches link and button
      underlines. Lower = subtler background. */
-  --plasma-base: #0e2119;
+  --plasma-base: #000000;
   --border:     #1f1f1f;
   --danger:     #ff5555;
   --warning:    #f1fa8c;
