@@ -33,6 +33,14 @@ selector `[data-theme=...]` es residuo y debe eliminarse.
 - Expressive Code con un solo tema: github-dark-default
 - `themeCssSelector: false` — con un único tema se emite como estilos base
   sin envolver en un bloque `[data-theme]` que nadie llegaría a matchear
+- `defaultProps: { frame: 'code' }` — todos los bloques se renderizan igual.
+  Por defecto el plugin de frames promociona los lenguajes de shell (bash, sh,
+  powershell…) a marco de terminal, que añade una barra de título con puntos de
+  ventana y hace que los bloques bash no se parezcan a los demás. Se puede
+  recuperar por bloque con `frame="terminal"` en la valla del fence.
+- Los overrides de `.frame.is-terminal` en `global.css` se mantienen aunque hoy
+  no se use ningún marco de terminal: son los que dan el fondo correcto si
+  alguien pone `frame="terminal"` en un bloque suelto.
 
 ## Tipografía
 - Sans: Inter (400, 500, 600, 700)
