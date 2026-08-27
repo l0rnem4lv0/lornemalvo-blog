@@ -285,8 +285,66 @@ a:hover {
 /* ── Expressive Code: unified frame backgrounds ── */
 .expressive-code .frame {
   --ec-frm-edBg: var(--bg-code);
+
+  /* Copy button chrome, via EC's own knobs: no background plate, no border,
+     leaving just the icon. */
+  --ec-frm-inlBtnBgIdleOpa: 0;
+  --ec-frm-inlBtnBgHoverOrFocusOpa: 0;
+  --ec-frm-inlBtnBgActOpa: 0;
+  --ec-frm-inlBtnBrdOpa: 0;
 }
+
+/* Kept although defaultProps forces frame: 'code' — this is what gives a
+   correct background if a block ever opts back in with frame="terminal". */
 .expressive-code .frame.is-terminal {
   --ec-frm-trmBg: var(--bg-code);
   --ec-frm-trmTtbBg: var(--bg-code);
+}
+
+/* ── Expressive Code: copy button ──
+ * EC ships this hover-gated, 2rem, top-right, with a background plate and a
+ * border. We want it always visible, small, frameless and top-left.
+ *
+ * Every selector here carries `.frame` purely for specificity: ec.*.css loads
+ * after our stylesheet (verified in the built <head>: our CSS is index 0, EC's
+ * is index 3), so at equal specificity EC would win on source order. Adding
+ * one class beats it without reaching for !important. */
+.expressive-code .frame .copy {
+  /* EC anchors it top-right; this is the opposite corner. The insets are
+     tight on purpose — code text starts 22px in and 20px down, so anything
+     bigger lands on the first line. */
+  inset-inline-start: 2px;
+  inset-inline-end: auto;
+  inset-block-start: 2px;
+}
+
+.expressive-code .frame .copy button {
+  width: 1.05rem;
+  height: 1.05rem;
+  /* EC paints --code-background behind the icon; drop it along with the
+     plate and border, which are zeroed via the EC vars above. */
+  background: none;
+  opacity: 0.3;
+}
+
+/* EC reveals the button when the *block* is hovered. Keep it steady instead:
+   only hovering the button itself should change anything. */
+.expressive-code .frame:hover .copy button:not(:hover):not(:focus-visible) {
+  opacity: 0.3;
+}
+
+.expressive-code .frame .copy button::after {
+  /* Shrinks the glyph inside the button box. */
+  margin: 0.2rem;
+  background-color: var(--fg-muted);
+}
+
+.expressive-code .frame .copy button:hover,
+.expressive-code .frame .copy button:focus-visible {
+  opacity: 1;
+}
+
+.expressive-code .frame .copy button:hover::after,
+.expressive-code .frame .copy button:focus-visible::after {
+  background-color: var(--accent);
 }

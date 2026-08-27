@@ -42,6 +42,24 @@ selector `[data-theme=...]` es residuo y debe eliminarse.
   no se use ningún marco de terminal: son los que dan el fondo correcto si
   alguien pone `frame="terminal"` en un bloque suelto.
 
+### Botón de copiar
+
+- EC lo trae oculto hasta que pasas por el bloque, a 2rem, arriba a la derecha
+  y con placa de fondo y borde. Lo nuestro: siempre visible al 0.3, 17px, sin
+  marco, arriba a la izquierda, y `--accent` al pasar por encima.
+- La placa y el borde se anulan con las variables de EC
+  (`--ec-frm-inlBtnBg*Opa`, `--ec-frm-inlBtnBrdOpa`). Posición, tamaño y
+  visibilidad no están expuestos como opciones, así que van en CSS.
+- **Todos los selectores llevan `.frame` a propósito, por especificidad.**
+  `ec.*.css` se carga después de nuestra hoja (en el `<head>` construido:
+  la nuestra es índice 0, la de EC índice 3), así que a igualdad de
+  especificidad ganaría EC por orden de fuente. Añadir una clase basta y evita
+  `!important`. Si tocas estos selectores, no quites el `.frame`.
+- **Margen ajustado**: el texto del código empieza a 22px del borde izquierdo y
+  20px del superior. El botón de 17px con inset de 2px deja 1px de holgura
+  vertical. Si cambias el tamaño de fuente del código, su padding o el tamaño
+  del botón, vuelve a medir: se solapan con muy poco.
+
 ## Tipografía
 - Sans: Inter (400, 500, 600, 700)
 - Mono: JetBrains Mono (400, 500, 700)
