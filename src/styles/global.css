@@ -302,25 +302,19 @@ a:hover {
 }
 
 /* ── Expressive Code: copy button ──
- * EC ships this hover-gated, 2rem, top-right, with a background plate and a
- * border. We want it always visible, small, frameless and top-left.
+ * EC ships this hover-gated, 2rem, with a background plate and a border. We
+ * keep its top-right corner but want it always visible, smaller and frameless.
  *
  * Every selector here carries `.frame` purely for specificity: ec.*.css loads
  * after our stylesheet (verified in the built <head>: our CSS is index 0, EC's
  * is index 3), so at equal specificity EC would win on source order. Adding
  * one class beats it without reaching for !important. */
-.expressive-code .frame .copy {
-  /* EC anchors it top-right; this is the opposite corner. The insets are
-     tight on purpose — code text starts 22px in and 20px down, so anything
-     bigger lands on the first line. */
-  inset-inline-start: 2px;
-  inset-inline-end: auto;
-  inset-block-start: 2px;
-}
-
 .expressive-code .frame .copy button {
-  width: 1.05rem;
-  height: 1.05rem;
+  /* EC's own top-right anchoring is left alone — there is more clearance on
+     that side than in the left gutter, which is why this is bigger than it
+     could be over there. */
+  width: 1.4rem;
+  height: 1.4rem;
   /* EC paints --code-background behind the icon; drop it along with the
      plate and border, which are zeroed via the EC vars above. */
   background: none;
@@ -335,7 +329,7 @@ a:hover {
 
 .expressive-code .frame .copy button::after {
   /* Shrinks the glyph inside the button box. */
-  margin: 0.2rem;
+  margin: 0.3rem;
   background-color: var(--fg-muted);
 }
 
