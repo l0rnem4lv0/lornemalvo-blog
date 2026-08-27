@@ -163,10 +163,16 @@ src/content/posts/
 - `src/components/AsciiPlasma.astro`, mounted once in `BaseLayout` before `<Header />`.
 - Canvas at `position: fixed; z-index: -1` — paints above the propagated `html`
   background and below all content, so no wrapper needs its own stacking context.
-- Colours are read live from `--plasma-base` / `--accent` / `--accent-white`, never
-  hardcoded, so the layer follows the palette. `--plasma-base` is the darkest stop
-  and exists solely for this effect — darken it to calm the background without
-  touching link/button underlines, which use `--accent-dim`.
+- One ink, never a colour ramp. Every glyph is drawn in `--plasma-ink` (read
+  live, falling back to `--accent`); the level selects the glyph and nothing
+  else. A ramp whose dark end sat near the background luminance did not read as
+  characters, it read as the background being a slightly different colour — the
+  tint this effect must not have. With one ink each pixel is either a legible
+  glyph or untouched background, so `--bg` is the only background colour there
+  is to control. Verified by profiling a page: the red channel is 0.00 across
+  the full width and unlit columns read exactly `--bg`.
+- Keep `--plasma-ink` clearly brighter than `--bg`. Moving it toward the
+  background luminance reintroduces the tint.
 - Tuning knobs are component props (`opacity`, `cellSize`, `speed`, `scale`,
   `levels`, `contrast`, `scanlines`, `flicker`). `opacity` is the subtlety dial.
 - Cost controls: 24fps cap, DPR capped at 1.5, blank glyph level skipped, one

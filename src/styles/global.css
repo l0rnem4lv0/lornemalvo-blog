@@ -69,16 +69,17 @@
 :root {
   --bg:         #000000;
   --bg-soft:    #0c0c0c;
-  --bg-code:    #080c12;
+  --bg-code:    #111315;
   --fg:         #e5e5e5;
   --fg-muted:   #888888;
   --accent:     #00ff9c;
   --accent-white: #c6ffd1;
   --accent-dim: #1a3d2e;
-  /* Darkest stop of the ASCII plasma ramp. Decorative only — kept separate
-     from --accent-dim so tuning the background never touches link and button
-     underlines. Lower = subtler background. */
-  --plasma-base: #000000;
+  /* Single ink for the ASCII background glyphs. Decorative only. Keep it
+     clearly brighter than --bg: a value near the background luminance stops
+     reading as characters and starts reading as a tint on the background,
+     which is exactly what this effect must not do. */
+  --plasma-ink: #00ff9c;
   --border:     #1f1f1f;
   --danger:     #ff5555;
   --warning:    #f1fa8c;
